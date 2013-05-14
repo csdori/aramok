@@ -1,0 +1,145 @@
+hany.pont<-source.nb
+
+memb.currents.interpol<-array(0,c(hany.pont, ido.nb))
+C.interpol<-array(0,c(hany.pont, ido.nb))
+max.memb.currents<-max(memb.currents)
+min.memb.currents<-min(memb.currents)
+max.C<-max(C)
+min.C<-min(C)
+rmse.snap<-array(0,c(1,length(time)))
+#normalizes rmse
+nrmse.snap<-array(0,c(1,length(time)))
+for(i in 1:length(time)){
+memb.currents.interpol[,i]<-interpol(seg.kord[,3],memb.currents[,i]/(-min.memb.currents),c(seq(0,cell.length,length.out=hany.pont)))
+C.interpol[,i]<-interpol(source.cord[,3],C[,i],seg.kord[,3])
+#C.interpol[,i]<-interpol(source.cord[,3],C[,i]/(-min.C),c(seq(0,cell.length,length.out=hany.pont)))
+#rmse.snap[i]<-sqrt(mean((memb.currents.interpol[,i]-C.interpol[,i])^2))
+rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C[,i])^2))
+nrmse.snap[i]<-rmse.snap[i]/(max(memb.currents[,i])-min(memb.currents[,i]))
+}
+#rmse.total<-sqrt(mean((memb.currents.interpol-C.interpol)^2))
+rmse.total<-sqrt(mean((memb.currents-C)^2))
+nrmse.total<-rmse.total/(max(memb.currents)-min(memb.currents))
+
+#par(mfrow=c(3,1))
+#matplot(t(C.interpol),t='l')
+#matplot(t(memb.currents.interpol),t='l')
+#matplot(t(C.interpol-memb.currents.interpol),t='l') # relatív hiba
+#RMSE idopillanatonkent
+@
+
+
+<<tobbiresz,echo=FALSE,fig=TRUE>>=
+X11.options(width=10,height=5)
+par(mfrow=c(1,2))
+matplot(t(C.interpol[-1,]),t='l',col=db[-1],lty=1:6)
+matplot(t(memb.currents.interpol[-1,]),t='l',col=db[-1],lty=1:6)
+legend('topright',db[-1],db[-1],pch=NULL, col=db[-1],lty=1:6)
+
+@
+
+
+
+<<echo=FALSE,fig=TRUE>>=
+par(mfrow=c(1,2))
+plot(time,c(rmse.snap),t='l',main='RMSE')
+plot(time,c(nrmse.snap),t='l',main='Normalized RMSE')
+cat(paste("Overall RMSE",rmse.total))
+cat(paste("Overall normalized RMSE",nrmse.total))
+@
+
+<<CSD, echo=FALSE,fig=TRUE>>=
+
+#Hagyomanyos CSD-vel valo osszehasonlitas
+CSD.trad<-array(0,dim=c(hany.pont,dim(time)[1]))
+CSD.trad.interpol<-array(0,dim=c(hany.pont,dim(time)[1]))
+interpoltavkoz<-c(seq(0,cell.length,length.out=hany.pont))[2]-c(seq(0,cell.length,length.out=hany.pont))[1]
+LFP.interpol<-array(0,dim=c(hany.pont+2,dim(time)[1]))
+for(ido in 1:length(time)){
+LFP.interpol[,ido]<-interpol(elec.kord[,3],LFP[,ido],c(seq(0-interpoltavkoz,cell.length+interpoltavkoz,length.out=(hany.pont+2))))
+}
+for(i in 2:(hany.pont+1)){
+CSD.trad[i-1,]<--sigma* (LFP.interpol[i-1,]-2*LFP.interpol[i,]+LFP.interpol[i+1,])/elec.dist^2*1000000
+}
+for(ido in 1:length(time)){
+CSD.trad.interpol[,ido]<-interpol(c(seq(0-interpoltavkoz,cell.length+interpoltavkoz,length.out=(hany.pont+2)))[2:(M+1)],CSD.trad[,ido],seg.kord[,3])
+}
+
+par(mfrow=c(2,1))
+matplot(t(CSD.trad.interpol),t='l',main='CSD')
+
+holl<-c(seq(0,cell.length,length.out=hany.pont))
+image(time,seg.kord[,3],t(CSD.trad.interpol),col=rainbow(40),main='CSD')
+#mit kene elmenteni?
+#matplotos abra, az eredeti helyen szamoltakrol
+#matplotos az interpolacios helyen szamoltrol
+#rmse.snap
+#rmse.total
+
+#lefuttatni lehetne
+#hiba a távolság függvényében
+#hiba a használt bazisfuggvenyek szamanak fuggvenyeben itt talan valami aranyra ken ezt megadni
+#hiba az R fuggvenyeben
+#MEGJEGYZESEK
+#-az LFP-be nem számították bele a stimuláció extracell tert, pedig bitso van akkor is valami!!
+#*össze vissza kavarnak a szigmával, jobb lenne magamtól kiszámolni
+@
+
+<<sCSD,echo=FALSE>>=
+
+#itta Tres-zel szűmolt értékekből nincs még távolság számolva
+I.sCSD<-1/const*solve(T)%*%LFP
+
+
+I.sCSD.interpol<-array(0,dim=c(hany.pont,dim(time)[1]))
+for(i in 1:length(time)){
+I.sCSD.interpol[,i]<-interpol(xj,I.sCSD[,i],seg.kord[,3])
+}
+
+@
+
+Spatial distribution at spike:
+
+<<spatialspike, echo=FALSE,fig=TRUE>>=
+spikehol<-which(memb.currents == min(memb.currents),arr.ind=TRUE)[2]
+plot(seg.kord[,3],memb.currents[,spikehol],t='l',xlab='y (um)',ylab='current (nA)',main='Comparison of methods at the peak of the spike')
+#lines(seg.kord[,3],CSD.trad.interpol[,spikehol],col='RED')
+lines(seg.kord[,3],C[,spikehol],col='BLUE')
+#lines(seg.kord[1:el.nb,3],I.sCSD[,spikehol],col='PURPLE')
+#lines(C.star[,spikehol],col='GREEN')
+legend('bottomright',c('OMC','kCSD'), col=c('BLACK','BLUE'),lty=1)
+@
+
+<<spatialspike2, echo=FALSE,fig=FALSE>>=
+plot(seg.kord[,3],memb.currents[,spikehol],t='l',xlab='y (um)',ylab='current (nA)',main='Comparison of methods at the peak of the spike')
+lines(seg.kord[,3],CSD.trad.interpol[,spikehol],col='RED')
+lines(seg.kord[,3],C[,spikehol],col='BLUE')
+lines(seg.kord[,3],I.sCSD.interpol[,spikehol],col='PURPLE')
+#lines(C.star[,spikehol],col='GREEN')
+legend('bottomright',c('OMC','kCSD','sCSD','CSD'), col=c('BLACK','BLUE','PURPLE','RED'),lty=1)
+
+
+rmse.spike<-sqrt(mean((C[,spikehol]-memb.currents[,spikehol])^2))
+
+@
+<<rmsespike, echo=FALSE>>=
+cat(paste("Spike rmse:", rmse.spike ))
+
+#Writing out the data and other infos:
+dir.create('out')
+#original membrane current
+#name.output.OMC<-paste('out/OMC_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+#write.table(memb.currents,name.output.OMC,col.names=FALSE, row.names=FALSE)
+#calculated membrane current
+name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(C,name.output.ksCSD,col.names=FALSE, row.names=FALSE)
+#snap RMSE
+name.output.tRMSE<-paste('out/tRMSE_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(rmse.snap, name.output.tRMSE,col.names=FALSE, row.names=FALSE)
+name.output.ntRMSE<-paste('out/normtRMSE_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(nrmse.snap, name.output.ntRMSE,col.names=FALSE, row.names=FALSE)
+name.output.RMSE.total<-paste('out/RMSEtot_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(rmse.total, name.output.RMSE.total,col.names=FALSE, row.names=FALSE)
+name.output.nRMSE.total<-paste('out/normRMSEtot_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(nrmse.total, name.output.nRMSE.total,col.names=FALSE, row.names=FALSE)
+

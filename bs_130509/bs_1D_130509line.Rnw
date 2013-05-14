@@ -1,0 +1,405 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{Sweave}
+\SweaveOpts{prefix.string=plots/pl}
+\author{Dorottya Cserpan}
+
+\begin{document}
+
+\section{kCSD for Ballstick Modell}
+
+
+<<beolvasas,echo=FALSE>>=
+#source('/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/ballstick.R')
+#Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat//bs_1D_130506/bs_1D_130506.Rnw')
+hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509'
+setwd('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509')
+library('R2Cuba')
+library('corpcor')
+
+#milyen esetek legyenek lepcsofuggveny, gaussos
+#kulonbozo a bazisfuggvenyek szama
+#mas az atfedes aranya
+
+####################################
+#########   FUNCTIONS
+
+#interpolacio (mosthol, ertek, hol legyen)
+interpol<-function(xbe,y,xki){
+inter<-splinefun(xbe,y,method="monoH.FC")
+out<-inter(xki)
+return(out)
+}
+#######
+
+
+#####################################x
+#GETTING DATA AND PARAMETERS
+#1D kCSD for cells
+#reading in the middle points of the segments
+seg.kord<-as.matrix(read.table('coordsmid_x_y_z'))
+seg.kord<-matrix(seg.kord,ncol=3)
+seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
+seg.end<-matrix(as.matrix(read.table('coordsend_x_y_z')),ncol=3)
+seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
+seg.db<-length(seg.diam)
+#time
+time<-as.matrix(read.table('time'))
+
+#cell to electrode distance
+d<-as.matrix(read.table("elprop"))[1]
+
+#length of the segments
+seg.length<-as.matrix(read.table('seglength'))
+cell.length<-sum(seg.length)
+#coordinates of electrode
+elec.kord<-as.matrix(read.table('elcoord_x_y_z'))
+elec.kord<-matrix(elec.kord,ncol=3)
+elec.dist<-elec.kord[2,3]-elec.kord[1,3]
+el.nb<-dim(elec.kord)[1] #number of electrodes
+sigma<-as.matrix(read.table('elprop'))[2] #sigma
+#membrane currents
+memb.currents<-as.matrix(read.table('membcurr'))
+#stimulalo aram
+#stim.currents<-as.matrix(read.table('stimcur'))
+
+#Let's calculate the current density
+#seg.volume<-seg.length*pi*(seg.diam/2)^2 #volume of a segment
+#seg.surface<-seg.length*2*pi*(seg.diam/2) #surface of a segment
+#funoszt<-function(x) x/seg.volume 
+#funaramsur<-function(x) x*seg.surface
+#funaramvonal<-function(x) x/seg.length
+#memb.currents.vonal<-apply(memb.currents,2,funaramvonal) #line CSD
+#memb.currents.tot<-apply(memb.currents,2,funaramsur) #surface CSD
+#memb.currents.density<-apply(memb.currents,2,funoszt) #volume CSD
+
+#transfer matrix for sCSD
+xi<-elec.kord
+xj<-seq(0,500,length.out=el.nb)
+T<-array(0,c(el.nb,el.nb))
+for(i in 1:el.nb){
+for(j in 1:el.nb){
+T[i,j]<-1/sqrt(sum((xi[i,3]-xj[j])^2+d^2))
+}#j
+}#i
+#LFP.calc<-1/(4*pi*sigma)*T%*%memb.currents
+
+
+#lfp
+LFP<-as.matrix(read.table('myLFP'))
+
+#LFP<-LFP.calc/1000000 #most mV-ban van
+@
+
+
+Parameters:
+
+<<parameterek,echo=FALSE>>=
+
+#Parameters
+
+M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett források szama a sejten)
+#M<-seg.db #number of sources are same as number of segments
+d<-as.matrix(read.table('elprop'))[1] #distance of electrode
+
+#R<- 20 #width of Gaussian or length of step funtion
+R<-as.numeric(read.table('basewidth.txt'))
+#delta<-cell.length/(M-2) #shift of overlapping sources on average
+delta<-cell.length/(M) 
+#base<-'step' #type of base function ('step', 'Gaussian')
+#base<-'gauss'
+base<-paste(readLines('basetype.txt')) #getting it from a text file made by the .sh file
+#printing the parameters to the pdf file 
+cat(paste('Number of electrodes:',el.nb))
+cat(paste('Number of base functions:',M))
+cat(paste('Number of segments:',seg.db))
+cat(paste('Type of base functions:',base))
+cat(paste('Width of base functions:',R, 'um'))
+cat(paste('sigma:',sigma))
+cat(paste('Shift of overlapping of base functions:', delta, 'um'))
+cat(paste('Cell to electrode distance:',d))
+
+@
+
+Units:
+<<units,echo=FALSE>>=
+cat('Potential 	  [mV]')
+cat('Current      [nA]')
+cat('Conductivity [S/m]') 
+#cat('Capacitance 	[μF/cm2]')
+cat('Dimension 	  [μm]')
+#cat('Syn. weight 	[nS]')
+@
+
+
+<<bazisfgv,echo=FALSE>>=
+#location of base function
+
+source.cord<-array(0,c(M,3))
+#for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-2)*delta
+for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-1)*delta
+#source.cord[,3]<-seg.kord[,3]
+
+
+const<-1/(4*pi*sigma) 
+
+####################### kCSD
+
+#i function,in r position, i source's coordinate: source.cord
+#r_t ahol ki akarom számolni
+a<-numeric() #one point of line
+b<-numeric() #other point on the line
+a<-seg.kord[1,]
+b<-seg.kord[seg.db,]
+
+b.tilda.i<-function(i,R,source.cord,t)
+{
+out<-numeric()
+xl<-a[1]+(b[1]-a[1])*t
+yl<-a[2]+(b[2]-a[2])*t
+zl<-a[3]+(b[3]-a[3])*t
+
+if (base=='gauss') {out<-exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R))}
+if (base=='step'){ 
+thresh1<-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+if ( thresh1<= R^2)  out<-1 #itt eredetileg (R/2 volt)
+else out<-0
+
+} #step
+return(out)
+}
+
+
+b.i<-function(i,R,source.cord,r){
+
+
+#x,y,z szerint integrálunk
+fun<-function(t){
+
+xl<-a[1]+(b[1]-a[1])*t
+yl<-a[2]+(b[2]-a[2])*t
+zl<-a[3]+(b[3]-a[3])*t
+
+if (base=='gauss'){ ff<- exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R))/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)}
+
+if (base=='step'){
+thresh1<-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+if ( thresh1<= R^2) {ff<- 1/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2) }
+else ff<-0
+}
+
+return(ff)
+}
+
+
+integralt<-integrate(Vectorize(fun), -Inf,Inf)
+
+#bi.value<-const*integralt$value
+bi.value<-integralt$value
+#bi.value<-3
+return(bi.value)
+}
+
+
+@
+
+<<setuppara,echo=FALSE>>=
+
+####ABRA az elrendezesrol
+# ki kene rajzolni a neuronos szegmenseket, vastagsag stb
+#merolegesen rarajzolni a bazisfuggvenyeket
+seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
+seg.end<-matrix(as.matrix(read.table('coordsend_x_y_z')),ncol=3)
+seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
+db<-1:length(seg.diam)
+setwd(hovament)
+@
+
+<<setup,fig=TRUE,echo=FALSE>>=
+
+
+plot(elec.kord[,1],elec.kord[,3],xlim=c(-50,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup")
+points(seg.kord[,1],seg.kord[,3])
+points(source.cord[,1],source.cord[,3],col='RED')
+rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
+
+rect(-40,source.cord[1:M,3]-R/2,-30,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
+
+
+for(j in 1:M){
+x<-matrix(-100:600,ncol=1)
+gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(2*R))
+y<-apply(x,1,gaus)
+lines(-10*y-20,x)
+}
+legend("topleft",c("centre of bf","middle of seg","electrodes"),col=c("RED","BLACK","BLACK"),pch=c(1,1,15),bg="WHITE" )
+
+png("elrendezes.png",width=400, height=400)
+plot(elec.kord[,1],elec.kord[,3],xlim=c(-50,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup")
+points(seg.kord[,1],seg.kord[,3],pch=20)
+points(source.cord[,1],source.cord[,3],col='RED')
+rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
+
+#rect(-40,source.cord[1:M,3]-R/2,-30,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
+
+
+for(j in 1:M){
+x<-matrix(-100:600,ncol=1)
+gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(2*R))
+y<-apply(x,1,gaus)
+lines(-10*y-13,x)
+}
+legend("topleft",c("centre of bf","middle of seg","electrodes"),col=c("RED","BLACK","BLACK"),pch=c(1,20,15),bg="WHITE" )
+dev.off()
+
+@
+
+<<elefpes,fig=TRUE, echo=FALSE>>=
+##################
+#ábra az LFProl
+
+#plotting LFP
+par(mfrow=c(2,1))
+matplot(time,t(LFP),t='l',xlab='time (ms)',ylab='LFP')
+image(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP')
+
+@
+
+
+<<kernelszamolas,fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,1))
+library(foreach)
+library(doMC)
+#registerDoMC(cores=4)
+registerDoMC(cores=16)
+
+################# 
+#Számoljuk ki a B illetve B.tilda mátrixot
+#egy sor egy adott i-hez tartozó fgv, oszlopokban azonos helyekhez tartozó
+#[i,j] : az i.függvény a j-dik helyen
+
+source.nb<-M
+
+
+
+B.tilda<-array(0,c(source.nb,source.nb))
+B<-array(0,c(source.nb,el.nb))
+for(i in 1:source.nb){
+#cat(i)
+Bj.result<-numeric(el.nb)
+Bj.result<-foreach(j=1:el.nb,.combine=c) %dopar% {
+b.i(i,R,source.cord,elec.kord[j,])
+}
+B[i,]<-Bj.result
+
+B.t.j.result<-numeric(source.nb)
+B.t.j.result<-foreach(j=1:source.nb,.combine=c) %dopar% {
+#b.tilda.i(i,R, source.cord,source.cord[j,]) #ide a t-nek a megfelelő értékét kéne beírni a source coord helyén
+b.tilda.i(i,R, source.cord,(source.cord[j,3]-a[3])/(b[3]-a[3])) #if (b[3]-a[3])!=0 !!
+}
+B.tilda[i,]<-B.t.j.result
+} #i
+
+
+K<-array(0,c(el.nb,el.nb))
+K.tilda<-array(0,c(source.nb,el.nb))
+
+K<-t(B)%*%B
+K.tilda<-t(B)%*%B.tilda
+#Most mi vaaan?
+C<-1/const*t(K.tilda)%*%solve(K)%*%LFP#*1000000#hogy nV-ban legyen az LFP ,
+#C<-C/10^6 #a sigmaban cm^2-et használnak
+# az integráló konstanssal is le kell osztani -hogy áramot kapjunk... !!!!!!!
+#Amúgy valszeg sűrűséget kapunk, ami nekünk nem is rossz, úgyhogy kommenteljük ki ezeket
+if (base=='gauss') C.curr<- (R*2*pi)^(1/2)*C #Gaussos eset
+#C.curr<- (R*2*pi)^(1/2)*C 
+if (base=='step') C.curr<- R*C #step function eset 
+C.dens<-C
+
+#Check whether the sum of current is 0
+par(mfrow=c(2,1))
+memb.current.colsum<-colSums(memb.currents)
+plot(memb.current.colsum,t='l',main='Sum of OMC')
+C.curr.colsum<-colSums(C.curr)
+plot(C.curr.colsum,t='l', main='Sum of estimated currents')
+#C<-t(K.tilda)%*%pseudoinverse(K)%*%LFP
+
+@
+
+%Nem vagyok benne biztos, hogy ez jó...
+%Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
+%<<Cstar,fig=TRUE,echo=FALSE>>=
+<<Cstar,echo=FALSE>>=
+#amplitudes<-array(0,c(seg.db,M))
+#b.tilda.i<-function(i,R,source.cord,r.t)
+#out<-exp(-sum((source.cord[i,]-r.t)^2)/(2*R))
+#for(k in 1: seg.db){
+#	for (i in 1:M){
+#	amplitudes[k,i]<-b.tilda.i(i,R,source.cord,seg.kord[k,])
+#	}
+#}
+#image(1:seg.db,1:M,amplitudes)
+#C.star<-amplitudes%*%C
+#matplot(t(C.star),t='l')
+#C<-C.star
+@
+
+<<membcurrentplot,fig=TRUE,echo=FALSE>>=
+par(mfrow=c(2,1))
+
+matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)")
+matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)")
+legend('topright',db,db,pch=NULL, col=db,lty=1:6,bg="WHITE")
+@
+
+<<imagemebc,fig=TRUE,echo=FALSE>>=
+th.l<-min(C.curr,memb.currents)
+th.u<-max(C.curr,memb.currents)
+
+
+par(mfrow=c(2,1))
+image(time,seg.kord[,3],t(memb.currents),col=rainbow(40),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
+image(time,source.cord[,3],t(C.curr),col=rainbow(40),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
+
+
+@
+
+<<splineinterpol,echo=FALSE,fig=TRUE>>=
+#spline interpolaljuk a függvényt, és ugyanazokban a a pontokban számítsuk ki az eltérést...
+#egyenlore elteresek van az eredeti és számolt áramok nagyságrendjében, ezért 1-re normáltjukkal számoljunk
+#legyenek az interpolációs pontok ugyanazok, mint a source pontok???
+ido.nb<-length(time)
+#Let's calculate the current densities first
+#let's devide each original current by the length of that segment
+memb.current.dens<-array(0,c(seg.db, ido.nb))
+for (i in 1: seg.db) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
+#the current densities are only well seen at the soma
+#image(memb.current.dens)
+
+#let's devaide the estimated current'a by the distance between them
+#mivel feljebb kikommenteltük azt, hogy áramot számítson, így sűrűséget kapunk
+
+#C.dens<-array(0,c(M, ido.nb))
+#for (i in 1: M) C.dens[i,]<-C[i,]/delta
+C.dens.range<-range(C.dens)
+memb.current.dens.range<-range(memb.current.dens)
+th.lower<-min(C.dens,memb.current.dens)
+th.upper<-max(C.dens,memb.current.dens)
+
+par(mfrow=c(2,1))
+image(time,seg.kord[,3],t(memb.current.dens),col=rainbow(40),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
+image(time,source.cord[,3],t(C.dens),col=rainbow(40),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
+
+#parameters
+@
+
+
+
+
+\end{document}
+
