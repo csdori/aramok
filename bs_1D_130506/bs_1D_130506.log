@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  6 MAY 2013 16:43
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  9 MAY 2013 09:44
 entering extended mode
  %&-line parsing enabled.
 **bs_1D_130506.tex
@@ -248,25 +248,25 @@ File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
 )))) (./bs_1D_130506.aux)
 \openout1 = `bs_1D_130506.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 11.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 11.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 12.
 
 (/usr/share/texmf-texlive/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    ... okay on input line 12.
 
 (/usr/share/texmf-texlive/tex/latex/ucs/ucsencs.def
 File: ucsencs.def 2003/11/29 Fixes to fontencodings LGR, T3
@@ -284,97 +284,77 @@ File: ucsencs.def 2003/11/29 Fixes to fontencodings LGR, T3
 \MPnumerator=\count109
 \everyMPtoPDFconversion=\toks26
 )
-LaTeX Font Info:    Try loading font information for T1+aett on input line 21.
+LaTeX Font Info:    Try loading font information for T1+aett on input line 22.
  (/usr/share/texmf-texlive/tex/latex/ae/t1aett.fd
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
 )
 (/usr/share/texmf-texlive/tex/latex/ucs/data/uni-3.def
 File: uni-3.def 2004/10/17 UCS: Unicode data U+0300..U+03FF
 )
-LaTeX Font Info:    Try loading font information for TS1+aett on input line 56.
+LaTeX Font Info:    Try loading font information for TS1+aett on input line 57.
 
 
 (/usr/share/texmf/tex/latex/R/tex/latex/ts1aett.fd
 File: ts1aett.fd 
 )
-LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 56.
+LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 57.
 
 
 (/usr/share/texmf-texlive/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `TS1/aett/m/n' in size <10> not available
-(Font)              Font shape `TS1/cmtt/m/n' tried instead on input line 56.
+(Font)              Font shape `TS1/cmtt/m/n' tried instead on input line 57.
 
-<bs_1D_130506-setup.pdf, id=1, 433.62pt x 433.62pt>
-File: bs_1D_130506-setup.pdf Graphic file (type pdf)
+<plots/pl-setup.pdf, id=1, 433.62pt x 433.62pt>
+File: plots/pl-setup.pdf Graphic file (type pdf)
+ <use plots/pl-setup.pdf>
+<plots/pl-elefpes.pdf, id=2, 433.62pt x 433.62pt>
+File: plots/pl-elefpes.pdf Graphic file (type pdf)
+ <use plots/pl-elefpes.pdf>
+[1
 
-<use bs_1D_130506-setup.pdf>
-<bs_1D_130506-elefpes.pdf, id=2, 433.62pt x 433.62pt>
-File: bs_1D_130506-elefpes.pdf Graphic file (type pdf)
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./plots/pl-setup.pdf>]
+<plots/pl-membcurrentplot.pdf, id=21, 433.62pt x 433.62pt>
+File: plots/pl-membcurrentplot.pdf Graphic file (type pdf)
 
-<use bs_1D_130506-elefpes.pdf> [1
+<use plots/pl-membcurrentplot.pdf>
+<plots/pl-imagemebc.pdf, id=22, 433.62pt x 433.62pt>
+File: plots/pl-imagemebc.pdf Graphic file (type pdf)
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./bs_1D_130506-setup.pdf>]
+<use plots/pl-imagemebc.pdf>
+<plots/pl-tobbiresz.pdf, id=23, 433.62pt x 433.62pt> [2 <./plots/pl-elefpes.pdf
+> <./plots/pl-membcurrentplot.pdf>]
+File: plots/pl-tobbiresz.pdf Graphic file (type pdf)
+ <use plots/pl-tobbiresz.pdf>
+<plots/pl-014.pdf, id=38, 433.62pt x 433.62pt>
+File: plots/pl-014.pdf Graphic file (type pdf)
+ <use plots/pl-014.pdf>
+<plots/pl-CSD.pdf, id=39, 433.62pt x 433.62pt> [3 <./plots/pl-imagemebc.pdf> <.
+/plots/pl-tobbiresz.pdf>]
+File: plots/pl-CSD.pdf Graphic file (type pdf)
+ <use plots/pl-CSD.pdf>
+<plots/pl-spatialspike.pdf, id=54, 433.62pt x 433.62pt>
+File: plots/pl-spatialspike.pdf Graphic file (type pdf)
 
-(/usr/share/texmf-texlive/tex/latex/ucs/data/uni-0.def
-File: uni-0.def 2004/10/17 UCS: Unicode data U+0000..U+00FF
-)
-(/usr/share/texmf-texlive/tex/latex/ucs/data/uni-1.def
-File: uni-1.def 2004/10/17 UCS: Unicode data U+0100..U+01FF
-)
-<bs_1D_130506-Cstar.pdf, id=21, 433.62pt x 433.62pt>
-File: bs_1D_130506-Cstar.pdf Graphic file (type pdf)
-
-<use bs_1D_130506-Cstar.pdf>
-<bs_1D_130506-membcurrentplot.pdf, id=22, 433.62pt x 433.62pt> [2 <./bs_1D_1305
-06-elefpes.pdf>]
-File: bs_1D_130506-membcurrentplot.pdf Graphic file (type pdf)
- <use bs_1D_130506-membcurrentplot.pdf>
-<bs_1D_130506-imagemebc.pdf, id=31, 433.62pt x 433.62pt>
-File: bs_1D_130506-imagemebc.pdf Graphic file (type pdf)
-
-<use bs_1D_130506-imagemebc.pdf>
-<bs_1D_130506-tobbiresz.pdf, id=32, 433.62pt x 433.62pt> [3 <./bs_1D_130506-Cst
-ar.pdf> <./bs_1D_130506-membcurrentplot.pdf>]
-File: bs_1D_130506-tobbiresz.pdf Graphic file (type pdf)
- <use bs_1D_130506-tobbiresz.pdf>
-<bs_1D_130506-014.pdf, id=47, 433.62pt x 433.62pt>
-File: bs_1D_130506-014.pdf Graphic file (type pdf)
- <use bs_1D_130506-014.pdf>
-<bs_1D_130506-CSD.pdf, id=48, 433.62pt x 433.62pt> [4 <./bs_1D_130506-imagemebc
-.pdf> <./bs_1D_130506-tobbiresz.pdf>]
-File: bs_1D_130506-CSD.pdf Graphic file (type pdf)
- <use bs_1D_130506-CSD.pdf>
-<bs_1D_130506-spatialspike.pdf, id=63, 433.62pt x 433.62pt>
-File: bs_1D_130506-spatialspike.pdf Graphic file (type pdf)
-
-<use bs_1D_130506-spatialspike.pdf>
-Overfull \hbox (71.53387pt too wide) in paragraph at lines 99--101
-[]\T1/aer/m/n/10 Spatial dis-tri-bu-tion at spike: [] 
- []
-
-<bs_1D_130506-spatialspike2.pdf, id=64, 433.62pt x 433.62pt> [5 <./bs_1D_130506
--014.pdf> <./bs_1D_130506-CSD.pdf>]
-File: bs_1D_130506-spatialspike2.pdf Graphic file (type pdf)
- <use bs_1D_130506-spatialspike2.pdf>
-[6 <./bs_1D_130506-spatialspike.pdf> <./bs_1D_130506-spatialspike2.pdf>]
-(./bs_1D_130506.aux) ) 
+<use plots/pl-spatialspike.pdf> [4 <./plots/pl-014.pdf> <./plots/pl-CSD.pdf>]
+[5 <./plots/pl-spatialspike.pdf>] (./bs_1D_130506.aux) ) 
 Here is how much of TeX's memory you used:
- 4777 strings out of 495061
- 59755 string characters out of 1182621
+ 3674 strings out of 495061
+ 48108 string characters out of 1182621
  97177 words of memory out of 3000000
- 7892 multiletter control sequences out of 15000+50000
+ 6796 multiletter control sequences out of 15000+50000
  12339 words of font info for 29 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 35i,5n,29p,469b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
- </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec/tctt10
-00.600pk></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></
-usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/te
-xmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on bs_1D_130506.pdf (6 pages, 409180 bytes).
+ 35i,5n,29p,328b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
+ </home/zoe/.texmf-var/
+fonts/pk/ljfour/jknappen/ec/tctt1000.600pk></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/am
+sfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cm
+tt10.pfb>
+Output written on bs_1D_130506.pdf (5 pages, 509366 bytes).
 PDF statistics:
- 109 PDF objects out of 1000 (max. 8388607)
+ 93 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 51 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

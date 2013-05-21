@@ -69,14 +69,9 @@ memb.currents<-as.matrix(read.table('membcurr'))
 #stim.currents<-as.matrix(read.table('stimcur'))
 
 #Let's calculate the current density
-seg.volume<-seg.length*pi*(seg.diam/2)^2 #volume of a segment
-seg.surface<-seg.length*2*pi*(seg.diam/2) #surface of a segment
-funoszt<-function(x) x/seg.volume 
-funaramsur<-function(x) x*seg.surface
-funaramvonal<-function(x) x/seg.length
-memb.currents.vonal<-apply(memb.currents,2,funaramvonal) #line CSD
-memb.currents.tot<-apply(memb.currents,2,funaramsur) #surface CSD
-memb.currents.density<-apply(memb.currents,2,funoszt) #volume CSD
+
+#memb.currents.vonal<-apply(memb.currents,2,funaramvonal) #line CSD
+
 
 #transfer matrix for sCSD
 xi<-elec.kord
@@ -103,14 +98,15 @@ Parameters:
 
 #Parameters
 
-M<-18#number of sources (a feltételezett források szama a sejten)
+M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett források szama a sejten)
 #M<-seg.db #number of sources are same as number of segments
-d<-as.matrix(read.table('elprop'))[1] #distance of electrode
+#d<-as.matrix(read.table('elprop'))[1] #distance of electrode
 
-#R<- 20 #width of Gaussian or length of step funtion
-R<-as.numeric(read.table('basewidth.txt'))
+#R<- 20 
+R<-as.numeric(read.table('basewidth.txt')) #width of Gaussian or length of step funtion
 delta<-cell.length/M #shift of overlapping sources on average
-#base<-'step' #type of base function ('step', 'Gaussian')
+#type of base function ('step', 'Gaussian')
+#base<-'step' 
 #base<-'gauss'
 base<-paste(readLines('basetype.txt')) #getting it from a text file made by the .sh file
 #printing the parameters to the pdf file 
@@ -140,7 +136,7 @@ cat('Dimension 	  [μm]')
 #location of base function
 
 source.cord<-array(0,c(M,3))
-for (i in 1:M) source.cord[i,3]<-(i-1)*delta
+for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-1)*delta
 #source.cord[,3]<-seg.kord[,3]
 
 
@@ -156,11 +152,17 @@ b.tilda.i<-function(i,R,source.cord,r.t)
 out<-numeric()
 if (base=='gauss') out<-exp(-(source.cord[i,3]-r.t[3])^2/(2*R))
 if (base=='step'){ 
-if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=0.001) #ez itt nem 1D
+if ((r.t[3] >= (source.cord[i,3])-R/2 ) & (r.t[3] <= (source.cord[i,3])+R/2 )& (r.t[1]^2+r.t[2]^2)<=0.001) #ez itt nem 1D
 out<-1
  #véletlenszerűen beállított
 else out<-0
 } #step
+
+if (base=='cos'){ 
+value<-pi/R*sqrt((source.cord[i,3]-r.t[3])^2)
+if (value<= R/2 & (r.t[1]^2+r.t[2]^2)<=0.001 ) out<-cos(value)
+if(value > R/2) out<-0}
+
 return(out)
 }
 
@@ -172,9 +174,14 @@ fun<-function(r.t){
 if (base=='gauss') ff<- exp(-sum(source.cord[i,3]-r.t[3])^2/(2*R))/sqrt(sum((r-r.t)^2))
 
 if (base=='step'){
-if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=0.001) ff<- 1/sqrt(sum((r-r.t)^2))
+if((r.t[3] >= (source.cord[i,3])-R/2 ) & (r.t[3] <= (source.cord[i,3])+R/2 )& (r.t[1]^2+r.t[2]^2)<=0.001) ff<- 1/sqrt(sum((r-r.t)^2))
 else ff<-0
 }
+
+if (base=='cos'){ 
+value<-pi/R*sqrt((source.cord[i,3]-r.t[3])^2)
+if (value <= R/2 & (r.t[1]^2+r.t[2]^2)<=0.001 ) ff<-cos(value)/sqrt(sum((r-r.t)^2))
+if (value > R/2) ff<-0}
 
 return(ff)
 }
@@ -255,7 +262,7 @@ image(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP')
 @
 
 
-<<kernelszamolas,echo=FALSE>>=
+<<kernelszamolas,fig=TRUE,echo=FALSE>>=
 par(mfrow=c(1,1))
 library(foreach)
 library(doMC)
@@ -295,14 +302,21 @@ K<-t(B)%*%B
 K.tilda<-t(B)%*%B.tilda
 #Most mi vaaan?
 C<-1/const*t(K.tilda)%*%solve(K)%*%LFP#*1000000#hogy nV-ban legyen az LFP ,
-
-# az integráló konstanssal is le kell osztani -hogy áramot kapjunk... !!!!!!!
-#Amúgy valszeg sűrűséget kapunk, ami nekünk nem is rossz
-if (base=='gauss') C<- (R*2*pi)^(1/2)*C #Gaussos eset
-#C<- (R*2*pi)^(1/2)*C 
-if (base=='step') C<- R*C #step function eset 
 C<-C/10^6 #a sigmaban cm^2-et használnak
+# az integráló konstanssal is le kell osztani -hogy áramot kapjunk... !!!!!!!
+#Amúgy valszeg sűrűséget kapunk, ami nekünk nem is rossz, úgyhogy kommenteljük ki ezeket
+if (base=='gauss') C.curr<- (R*2*pi)^(1/2)*C #Gaussos eset
+#C.curr<- (R*2*pi)^(1/2)*C 
+if (base=='step') C.curr<- R*C #step function eset 
+if (base=='cos')  C.curr<-2/pi*R*C
+C.dens<-C
 
+#Check whether the sum of current is 0
+par(mfrow=c(2,1))
+memb.current.colsum<-colSums(memb.currents)
+plot(memb.current.colsum,t='l',main='Sum of OMC')
+C.curr.colsum<-colSums(C.curr)
+plot(C.curr.colsum,t='l', main='Sum of estimated currents')
 #C<-t(K.tilda)%*%pseudoinverse(K)%*%LFP
 
 @
@@ -329,14 +343,18 @@ for(k in 1: seg.db){
 par(mfrow=c(2,1))
 
 matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)")
-matplot(time,t(C),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)")
+matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)")
 legend('topright',db,db,pch=NULL, col=db,lty=1:6,bg="WHITE")
 @
 
 <<imagemebc,fig=TRUE,echo=FALSE>>=
+th.l<-min(C.curr,memb.currents)
+th.u<-max(C.curr,memb.currents)
+
+
 par(mfrow=c(2,1))
-image(time,seg.kord[,3],t(memb.currents),col=rainbow(40),main='Membrane currents',xlab="time (ms)",ylab="y (um)")
-image(time,source.cord[,3],t(C),col=rainbow(40),main='Estimated MC',xlab="time (ms)",ylab="y (um)")
+image(time,seg.kord[,3],t(memb.currents),col=rainbow(40),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
+image(time,source.cord[,3],t(C.curr),col=rainbow(40),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
 
 
 @
@@ -354,14 +372,18 @@ for (i in 1: seg.db) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
 #image(memb.current.dens)
 
 #let's devaide the estimated current'a by the distance between them
-C.dens<-array(0,c(M, ido.nb))
-for (i in 1: M) C.dens[i,]<-C[i,]/delta
+#mivel feljebb kikommenteltük azt, hogy áramot számítson, így sűrűséget kapunk
+
+#C.dens<-array(0,c(M, ido.nb))
+#for (i in 1: M) C.dens[i,]<-C[i,]/delta
 C.dens.range<-range(C.dens)
 memb.current.dens.range<-range(memb.current.dens)
+th.lower<-min(C.dens,memb.current.dens)
+th.upper<-max(C.dens,memb.current.dens)
 
 par(mfrow=c(2,1))
-image(time,seg.kord[,3],t(memb.current.dens),col=rainbow(40),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=c(C.dens.range))
-image(time,source.cord[,3],t(C.dens),col=rainbow(40),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=c(C.dens.range))
+image(time,seg.kord[,3],t(memb.current.dens),col=rainbow(40),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
+image(time,source.cord[,3],t(C.dens),col=rainbow(40),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
 
 #parameters
 @

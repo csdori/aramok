@@ -1,0 +1,28 @@
+
+create soma[1]
+create dend[3]
+
+soma[0] {
+    pt3dadd(0, 0, 100, 18.8)
+    pt3dadd(0, 0, 118.8, 18.8)
+}
+
+dend[0] {
+    pt3dadd(0, 0, 118.8, 3.18)
+    pt3dadd(0, 0, 400, 3.18)
+}
+
+dend[1] {
+    pt3dadd(0, 0, 400, 2)
+    pt3dadd(0, 0, 600, 1)
+}
+
+dend[2] {
+    pt3dadd(0, 0, 100, 1)
+    pt3dadd(0, 0, 0, 2)
+}
+
+connect dend[0](0), soma[0](1)
+connect dend[1](0), dend[0](1)
+connect dend[2](1), soma[0](0)
+

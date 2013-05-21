@@ -140,8 +140,8 @@ def plotstuff(cell, electrode):
 
 ###############
 cell_parameters = {         
-        #'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
-	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/ballstick2.hoc',     # Mainen&Sejnowski, Nature, 1996
+        #'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
+	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick2.hoc',     # Mainen&Sejnowski, Nature, 1996
 	'Ra': 123,
         'tstartms' : 0.,                 # start time of simulation, recorders start at t=0
         'tstopms' : 70.,                   # stop simulation at 200 ms. 
@@ -150,13 +150,13 @@ cell_parameters = {
     	'e_pas' : -65,              # reversal potential passive mechs
 	'nsegs_method' :  'fixed_length',
 #	'fixed_length': 20, # method for setting number of segments,
-#	'max_nsegs_length':10, #igy kapunk 52 szegmenst
+	'max_nsegs_length':10, #igy kapunk 52 szegmenst
 #	'max_nsegs_length':20, #igy kapunk 27 szegmenst
-	'max_nsegs_length':30, #igy kapunk 18 szegmenst
+#	'max_nsegs_length':30, #igy kapunk 18 szegmenst
 #	'lambda_f' : 500,           # segments are isopotential at this frequency
        'timeres_NEURON' : 2.**-3,   # [ms] dt's should be in powers of 2 for both,
        'timeres_python' : 2.**-3,   # need binary representation
-    'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/active.hoc'], # will run this file
+    'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/active.hoc'], # will run this file
 }
 
 #Generate the grid in xz-plane over which we calculate local field potentials

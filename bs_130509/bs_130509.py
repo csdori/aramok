@@ -15,7 +15,11 @@ d = int(dist[0])
 f1.close()
 #d = 10
 #number of electrodes
-elecnumb=10
+#elecnumb=20
+f2 = open('elnum.txt', 'r')
+elnb = [line.strip() for line in f2]
+elecnumb = int(elnb[0])
+f2.close()
 ###################x
 #Plotting
 
@@ -96,7 +100,7 @@ def plotstuff(cell, electrode):
     ax.set_xticks([])
     ax.set_yticks([])
     
-    ax.axis([-61, 61, -61, 61])
+    ax.axis([-61, 150, -61, 400])
     
     ax.set_title('Location-dependent extracellular spike shapes')
     
@@ -119,7 +123,8 @@ def plotstuff(cell, electrode):
 
 ###############
 cell_parameters = {         
-        'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
+   #     'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
+	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick2.hoc',     # Mainen&Sejnowski, Nature, 1996
 	'Ra': 123,
         'tstartms' : 0.,                 # start time of simulation, recorders start at t=0
         'tstopms' : 70.,                   # stop simulation at 200 ms. 
@@ -127,17 +132,17 @@ cell_parameters = {
     	'v_init' : -65,             # initial crossmembrane potential
     	'e_pas' : -65,              # reversal potential passive mechs
 #	'nsegs_method' :  'fixed_length',
-	'fixed_length': 20, # method for setting number of segments,
+#	'fixed_length': 20, # method for setting number of segments,
 #	'max_nsegs_length':10, #igy kapunk 52 szegmenst
 #	'max_nsegs_length':20, #igy kapunk 27 szegmenst
 #	'max_nsegs_length':30, #igy kapunk 18 szegmenst
 	'lambda_f' : 500,           # segments are isopotential at this frequency
-    'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/active.hoc'], # will run this file
+    'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/active.hoc'], # will run this file
 }
 
 #Generate the grid in xz-plane over which we calculate local field potentials
 x = pl.linspace(d, d, elecnumb)
-z = pl.linspace(-50, 550, elecnumb)
+z = pl.linspace(-150, 550, elecnumb)
 
 y = pl.linspace(0, 0, x.size)
 
@@ -149,6 +154,7 @@ electrodeParameters = {
     'z' : z,
      'method' : 'som_as_point',  #treat soma segment as sphere source
      #'method' : 'pointsource'
+     #'method' : 'linesource'
 }
    
 
@@ -161,6 +167,7 @@ pointprocess= {
         'record_current' : True,
         'pptype' : 'IClamp',
         'amp' : 0.5,
+        #'amp' : 0.2,
         'dur' : 30,
         'delay' : 15
     }

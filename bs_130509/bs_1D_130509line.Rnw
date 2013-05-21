@@ -21,7 +21,7 @@ hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509'
 setwd('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509')
 library('R2Cuba')
 library('corpcor')
-
+library('fields')
 #milyen esetek legyenek lepcsofuggveny, gaussos
 #kulonbozo a bazisfuggvenyek szama
 #mas az atfedes aranya
@@ -42,11 +42,23 @@ return(out)
 #GETTING DATA AND PARAMETERS
 #1D kCSD for cells
 #reading in the middle points of the segments
-seg.kord<-as.matrix(read.table('coordsmid_x_y_z'))
-seg.kord<-matrix(seg.kord,ncol=3)
+seg.cord<-as.matrix(read.table('coordsmid_x_y_z'))
+seg.cord<-matrix(seg.cord,ncol=3)
+#seg.kord<-matrix(0,c(dim(seg.cord)))
+sorrend<-c(order(seg.cord[,3]))
+seg.kord<-seg.cord[sorrend,]
+
+#where do we want to ge the values of currents
+where.cord<-seg.kord
+where.db<-dim(where.cord)[1]
+
+
 seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
+seg.start<-seg.start[sorrend,]
 seg.end<-matrix(as.matrix(read.table('coordsend_x_y_z')),ncol=3)
+seg.end<-seg.end[sorrend,]
 seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
+seg.diam<-seg.diam[sorrend,]
 seg.db<-length(seg.diam)
 #time
 time<-as.matrix(read.table('time'))
@@ -56,6 +68,7 @@ d<-as.matrix(read.table("elprop"))[1]
 
 #length of the segments
 seg.length<-as.matrix(read.table('seglength'))
+seg.length<-seg.length[sorrend,]
 cell.length<-sum(seg.length)
 #coordinates of electrode
 elec.kord<-as.matrix(read.table('elcoord_x_y_z'))
@@ -65,6 +78,7 @@ el.nb<-dim(elec.kord)[1] #number of electrodes
 sigma<-as.matrix(read.table('elprop'))[2] #sigma
 #membrane currents
 memb.currents<-as.matrix(read.table('membcurr'))
+memb.currents<-memb.currents[sorrend,]
 #stimulalo aram
 #stim.currents<-as.matrix(read.table('stimcur'))
 
@@ -109,8 +123,8 @@ d<-as.matrix(read.table('elprop'))[1] #distance of electrode
 
 #R<- 20 #width of Gaussian or length of step funtion
 R<-as.numeric(read.table('basewidth.txt'))
-#delta<-cell.length/(M-2) #shift of overlapping sources on average
-delta<-cell.length/(M) 
+delta<-cell.length/(M) #shift of overlapping sources on average
+#delta<-cell.length/(M) 
 #base<-'step' #type of base function ('step', 'Gaussian')
 #base<-'gauss'
 base<-paste(readLines('basetype.txt')) #getting it from a text file made by the .sh file
@@ -141,8 +155,8 @@ cat('Dimension 	  [μm]')
 #location of base function
 
 source.cord<-array(0,c(M,3))
-#for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-2)*delta
-for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-1)*delta
+for (i in 1:M) source.cord[i,3]<-min(seg.kord[,3])+(i-1)*delta
+#for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-1)*delta
 #source.cord[,3]<-seg.kord[,3]
 
 
@@ -157,12 +171,12 @@ b<-numeric() #other point on the line
 a<-seg.kord[1,]
 b<-seg.kord[seg.db,]
 
-b.tilda.i<-function(i,R,source.cord,t)
+b.tilda.i<-function(i,R,source.cord,cord)
 {
 out<-numeric()
-xl<-a[1]+(b[1]-a[1])*t
-yl<-a[2]+(b[2]-a[2])*t
-zl<-a[3]+(b[3]-a[3])*t
+xl<-cord[1]
+yl<-cord[2]
+zl<-cord[3]
 
 if (base=='gauss') {out<-exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R))}
 if (base=='step'){ 
@@ -171,6 +185,20 @@ if ( thresh1<= R^2)  out<-1 #itt eredetileg (R/2 volt)
 else out<-0
 
 } #step
+if (base=='cos'){ 
+distan1<-sqrt((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+value<-pi/R*distan1
+if (distan1<= R/2) out<-cos(value)
+if(distan1 > R/2) out<-0}
+
+if (base=='sinxpx'){
+distan1<-sqrt((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+value<-4*pi/R*distan1
+if (distan1<= R/2 & distan1!=0) out<-sin(value)/value
+if (distan1==0) out<-1
+if(distan1 > R/2) out<-0}
+
+
 return(out)
 }
 
@@ -185,7 +213,7 @@ xl<-a[1]+(b[1]-a[1])*t
 yl<-a[2]+(b[2]-a[2])*t
 zl<-a[3]+(b[3]-a[3])*t
 
-if (base=='gauss'){ ff<- exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R))/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)}
+if (base=='gauss'){ ff<- (exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R)))/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)}
 
 if (base=='step'){
 thresh1<-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
@@ -193,11 +221,30 @@ if ( thresh1<= R^2) {ff<- 1/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]
 else ff<-0
 }
 
+if (base=='cos'){ 
+distan1<-sqrt((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+value<-pi/R*distan1
+if (distan1<= R/2) ff<-cos(value)/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)
+if(distan1 > R/2) ff<-0}
+
+if (base=='sinxpx'){
+distan1<-sqrt((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
+value<-4*pi/R*distan1
+if (distan1<= R/2 & distan1!=0) ff<-sin(value)/value/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)
+if (distan1==0) ff<-1
+if(distan1 > R/2) ff<-0}
+
+
+
+
 return(ff)
 }
 
 
-integralt<-integrate(Vectorize(fun), -Inf,Inf)
+#integralt<-integrate(Vectorize(fun), -Inf,Inf,rel.tol=0.001)
+integralt<-integrate(Vectorize(fun), (source.cord[i,3]-a[3]-2*R)/(b[3]-a[3]),(source.cord[i,3]-a[3]+2*R)/(b[3]-a[3]))
+#integralt<-cuhre(1,1,fun,lower=as.vector((source.cord[i,3]-10*R)/(b[3]-a[3])),upper=as.vector( (source.cord[i,3]+10*R)/(b[3]-a[3])),flags=list(verbose=0))
+#integralt<-cuhre(1,1,Vectorize(fun),lower=as.vector((-0.5)),upper=as.vector(1 ),flags=list(verbose=0))
 
 #bi.value<-const*integralt$value
 bi.value<-integralt$value
@@ -213,9 +260,7 @@ return(bi.value)
 ####ABRA az elrendezesrol
 # ki kene rajzolni a neuronos szegmenseket, vastagsag stb
 #merolegesen rarajzolni a bazisfuggvenyeket
-seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
-seg.end<-matrix(as.matrix(read.table('coordsend_x_y_z')),ncol=3)
-seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
+
 db<-1:length(seg.diam)
 setwd(hovament)
 @
@@ -223,20 +268,44 @@ setwd(hovament)
 <<setup,fig=TRUE,echo=FALSE>>=
 
 
-plot(elec.kord[,1],elec.kord[,3],xlim=c(-50,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup")
-points(seg.kord[,1],seg.kord[,3])
+plot(elec.kord[,1],elec.kord[,3],xlim=c(-35,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(seg.start[1,3]-10,seg.end[seg.db,3]-10))
+points(seg.kord[,1],seg.kord[,3],pch=20)
 points(source.cord[,1],source.cord[,3],col='RED')
 rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
 
-rect(-40,source.cord[1:M,3]-R/2,-30,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
-
-
+if (base=='step'){
+rect(-30,source.cord[1:M,3]-R/2,-20,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
+}
+if (base=='gauss'){
 for(j in 1:M){
 x<-matrix(-100:600,ncol=1)
 gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(2*R))
 y<-apply(x,1,gaus)
 lines(-10*y-20,x)
 }
+}
+
+
+if (base=='cos'){
+for(j in 1:M){
+x<-matrix((source.cord[j,3]-R/2):(source.cord[j,3]+R/2),ncol=1)
+cosinus<-function(r.t) cos(pi/R*(source.cord[j,3]-r.t))
+y<-apply(x,1,cosinus)
+lines(-10*y-20,x)
+}
+}
+
+if (base=='sinxpx'){
+for(j in 1:M){
+#x<-matrix(-100:600,ncol=1)
+x<-matrix((source.cord[j,3]-R/2):(source.cord[j,3]+R/2),ncol=1)
+sinxpx<-function(r.t) ifelse(((source.cord[j,3]-r.t)!=0),  sin(4*pi/R*(source.cord[j,3]-r.t))/(4*pi/R*(source.cord[j,3]-r.t)),1)
+
+y<-apply(x,1,sinxpx)
+lines(-10*y-20,x)
+}
+}
+
 legend("topleft",c("centre of bf","middle of seg","electrodes"),col=c("RED","BLACK","BLACK"),pch=c(1,1,15),bg="WHITE" )
 
 png("elrendezes.png",width=400, height=400)
@@ -259,6 +328,53 @@ dev.off()
 
 @
 
+More detailed setup:
+<<setup2,fig=TRUE,echo=FALSE>>=
+coloursline<-rainbow(7)
+plot(elec.kord[,1],elec.kord[,3],xlim=c(-83,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(-50,50))
+rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3],col="seashell1")
+points(seg.kord[,1],seg.kord[,3],pch=20,lwd=3)
+points(source.cord[,1],source.cord[,3],col=coloursline,pch=20,lwd=2)
+
+
+rect(-50+((1:M)%%7)*2,source.cord[1:M,3]-R/2,-35,source.cord[1:M,3]+R/2,border=coloursline[1:7],lwd=2)
+
+
+for(j in 1:M){
+x<-matrix(-100:600,ncol=1)
+gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(R*2))
+y<-apply(x,1,gaus)
+lines(-10*y-20,x,col=coloursline[1+(j-1)%%7],lwd=2)
+}
+
+
+
+
+for(j in 1:M){
+x<-matrix((source.cord[j,3]-R/2):(source.cord[j,3]+R/2),ncol=1)
+cosinus<-function(r.t) cos(pi/R*(source.cord[j,3]-r.t))
+y<-apply(x,1,cosinus)
+lines(-10*y-55,x,col=coloursline[1+(j-1)%%7],lwd=2)
+}
+
+
+
+for(j in 1:M){
+#x<-matrix(-100:600,ncol=1)
+x<-matrix((source.cord[j,3]-R/2):(source.cord[j,3]+R/2),ncol=1)
+sinxpx<-function(r.t) ifelse((((source.cord[j,3]-r.t))!=0),  sin(4*pi/R*(source.cord[j,3]-r.t))/(4*pi/R*(source.cord[j,3]-r.t)),1)
+y<-apply(x,1,sinxpx)
+lines(-10*y-70,x,col=coloursline[1+(j-1)%%7],lwd=2)
+}
+
+
+
+legend("topleft",c("centre of bf","middle of seg","electrodes"),col=c("RED","BLACK","BLACK"),pch=c(1,1,15),bg="WHITE" )
+
+@
+
+
+
 <<elefpes,fig=TRUE, echo=FALSE>>=
 ##################
 #ábra az LFProl
@@ -266,7 +382,8 @@ dev.off()
 #plotting LFP
 par(mfrow=c(2,1))
 matplot(time,t(LFP),t='l',xlab='time (ms)',ylab='LFP')
-image(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP')
+image.plot(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(40))
+
 
 @
 
@@ -287,7 +404,7 @@ source.nb<-M
 
 
 
-B.tilda<-array(0,c(source.nb,source.nb))
+B.tilda<-array(0,c(source.nb,where.db))
 B<-array(0,c(source.nb,el.nb))
 for(i in 1:source.nb){
 #cat(i)
@@ -297,10 +414,10 @@ b.i(i,R,source.cord,elec.kord[j,])
 }
 B[i,]<-Bj.result
 
-B.t.j.result<-numeric(source.nb)
-B.t.j.result<-foreach(j=1:source.nb,.combine=c) %dopar% {
+B.t.j.result<-numeric(where.db)
+B.t.j.result<-foreach(j=1:where.db,.combine=c) %dopar% {
 #b.tilda.i(i,R, source.cord,source.cord[j,]) #ide a t-nek a megfelelő értékét kéne beírni a source coord helyén
-b.tilda.i(i,R, source.cord,(source.cord[j,3]-a[3])/(b[3]-a[3])) #if (b[3]-a[3])!=0 !!
+b.tilda.i(i,R, source.cord,where.cord[j,]) #if (b[3]-a[3])!=0 !!
 }
 B.tilda[i,]<-B.t.j.result
 } #i
@@ -316,19 +433,35 @@ C<-1/const*t(K.tilda)%*%solve(K)%*%LFP#*1000000#hogy nV-ban legyen az LFP ,
 #C<-C/10^6 #a sigmaban cm^2-et használnak
 # az integráló konstanssal is le kell osztani -hogy áramot kapjunk... !!!!!!!
 #Amúgy valszeg sűrűséget kapunk, ami nekünk nem is rossz, úgyhogy kommenteljük ki ezeket
-if (base=='gauss') C.curr<- (R*2*pi)^(1/2)*C #Gaussos eset
-#C.curr<- (R*2*pi)^(1/2)*C 
-if (base=='step') C.curr<- R*C #step function eset 
+#if (base=='gauss') C.curr<- (R*2*pi)^(1/2)*C #Gaussos eset 
+#if (base=='step') C.curr<- R*C #step function eset 
+#if (base=='cos') C.curr<- 2/pi*R*C #step function eset 
+
+
+sinxx<- function (x) {
+out<-ifelse((x!=0), sin(4*pi/R*x)/(4*pi/R*x),1)
+return(out)}
+sinxintc<-integrate(sinxx,-R/2,R/2)$value
+#if (base=='sinxpx') C.curr<- sinxintc*C #step function eset 
+C.curr<-C
+for (i in 1: seg.db) C.curr[i,]<-C[i,]*seg.length[i]
 C.dens<-C
 
-#Check whether the sum of current is 0
-par(mfrow=c(2,1))
-memb.current.colsum<-colSums(memb.currents)
-plot(memb.current.colsum,t='l',main='Sum of OMC')
-C.curr.colsum<-colSums(C.curr)
-plot(C.curr.colsum,t='l', main='Sum of estimated currents')
-#C<-t(K.tilda)%*%pseudoinverse(K)%*%LFP
 
+#Check whether the sum of current is 0
+
+memb.current.colsum<-colSums(memb.currents)
+C.curr.colsum<-colSums(C.curr)
+plot(time,memb.current.colsum,t='l',main='Sum of Membrane Currents',ylim=range(memb.current.colsum,C.curr.colsum))
+lines(time,C.curr.colsum,col='RED')
+legend('topright',c('Original', 'Estimated'),lty=1,col=c('BLACK','RED'))
+
+#measure based on the difference from the original membrane current (sum)
+measure.curr<-sqrt(sum(memb.current.colsum-C.curr.colsum)^2)
+#C<-t(K.tilda)%*%pseudoinverse(K)%*%LFP
+#measure of peakness
+min.indexes<-which(C.curr==min(C.curr),arr.ind=TRUE)
+measure.peakness<--(min(C.curr)-mean(C.curr[-min.indexes[1],min.indexes[2]]))/sqrt(sum(C.curr[,min.indexes[2]]^2))
 @
 
 %Nem vagyok benne biztos, hogy ez jó...
@@ -350,21 +483,24 @@ plot(C.curr.colsum,t='l', main='Sum of estimated currents')
 @
 
 <<membcurrentplot,fig=TRUE,echo=FALSE>>=
-par(mfrow=c(2,1))
+par(mfrow=c(2,1),mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
+th.l<-min(C.curr,memb.currents)
+th.u<-max(C.curr,memb.currents)
+limitsodcurr<-max(abs(max(C.curr,memb.currents)))
+matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
+matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
+legend('topright',db,db, col=db,lty=1:6,bg="WHITE",inset=c(-0.6,0),ncol=2)
 
-matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)")
-matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)")
-legend('topright',db,db,pch=NULL, col=db,lty=1:6,bg="WHITE")
+
 @
 
 <<imagemebc,fig=TRUE,echo=FALSE>>=
-th.l<-min(C.curr,memb.currents)
-th.u<-max(C.curr,memb.currents)
 
 
+limitsodcurr<-range(C.curr,memb.currents)
 par(mfrow=c(2,1))
-image(time,seg.kord[,3],t(memb.currents),col=rainbow(40),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
-image(time,source.cord[,3],t(C.curr),col=rainbow(40),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=c(th.l,th.u))
+image.plot(time,seg.kord[,3],t(memb.currents),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(time,where.cord[,3],t(C.curr),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 
 
 @
@@ -386,20 +522,78 @@ for (i in 1: seg.db) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
 
 #C.dens<-array(0,c(M, ido.nb))
 #for (i in 1: M) C.dens[i,]<-C[i,]/delta
-C.dens.range<-range(C.dens)
-memb.current.dens.range<-range(memb.current.dens)
-th.lower<-min(C.dens,memb.current.dens)
-th.upper<-max(C.dens,memb.current.dens)
+
+limitsodcurr<-range(C.dens,memb.current.dens)
 
 par(mfrow=c(2,1))
-image(time,seg.kord[,3],t(memb.current.dens),col=rainbow(40),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
-image(time,source.cord[,3],t(C.dens),col=rainbow(40),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=c(th.lower,th.upper))
+image.plot(time,seg.kord[,3],t(memb.current.dens),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(time,where.cord[,3],t(C.dens),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+
+@
+
+After interpolating:
+
+<<splineinterpol2,echo=FALSE,fig=TRUE>>=
+####################xinterpolation
+
+hany.pont<-40
+memb.currents.dens.interpol<-array(0,c(hany.pont, ido.nb))
+C.dens.interpol<-array(0,c(hany.pont, ido.nb))
+rmse.snap<-array(0,c(1,length(time))) 
+measure1<-numeric()
+#normalizes rmse
+nrmse.snap<-array(0,c(1,length(time)))
+error.t<-array(0,c(1,length(time))) #normalied error for evrey time
+interpol.limit<-c(seq(-50,550,length.out=hany.pont))
+for(i in 1:length(time)){
+memb.currents.dens.interpol[,i]<-interpol(seg.kord[,3],memb.current.dens[,i],interpol.limit)
+C.dens.interpol[,i]<-interpol(where.cord[,3],C.dens[,i],interpol.limit)
+
+rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C.curr[,i])^2))
+nrmse.snap[i]<-rmse.snap[i]/sqrt(mean((memb.currents[,i]^2)))
+#nrmse.snap[i]<-rmse.snap[i]/(max(memb.currents[,i])-min(memb.currents[,i]))
+error.t[i]<-sum((memb.currents.dens.interpol[,i]-C.dens.interpol[,i])^2)#/sum(memb.currents.dens.interpol[,i]^2)
+
+}
+
+measure1<-sum(abs(C.curr-memb.currents))/sum(abs(C.curr))
+rmse.total<-sqrt(mean((memb.currents-C.curr)^2))
+nrmse.total<-rmse.total/sqrt(mean((memb.currents^2)))
+
+
+par(mfrow=c(2,1))
+limitsodcurr<-range(C.dens,memb.current.dens)
+image.plot(time,interpol.limit,t(memb.currents.dens.interpol),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(time,interpol.limit,t(C.dens.interpol),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+
 
 #parameters
 @
 
+<<writingtofiles,echo=FALSE>>=
+#name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+#write.table(C,name.output.ksCSD,col.names=FALSE, row.names=FALSE)
+#snap RMSE
+name.output.tRMSE<-paste('out0516/tRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+#write.table(rmse.snap, name.output.tRMSE,col.names=FALSE, row.names=FALSE)
+name.output.ntRMSE<-paste('out0516/normtRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+#write.table(nrmse.snap, name.output.ntRMSE,col.names=FALSE, row.names=FALSE)
+name.output.RMSE.total<-paste('out0516/RMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+#write.table(rmse.total, name.output.RMSE.total,col.names=FALSE, row.names=FALSE)
+name.output.nRMSE.total<-paste('out0516/normRMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+write.table(nrmse.total, name.output.nRMSE.total,col.names=FALSE, row.names=FALSE)
 
 
+name.output.measure1<-paste('out0516/meaure1_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+write.table(measure1, name.output.measure1,col.names=FALSE, row.names=FALSE)
+
+name.output.measure.curr<-paste('out0516/measurecurr_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+write.table(measure.curr, name.output.measure.curr,col.names=FALSE, row.names=FALSE)
+
+name.output.measure.peak<-paste('out0516/measurepeak_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+write.table(measure.peakness, name.output.measure.peak,col.names=FALSE, row.names=FALSE)
+
+@
 
 \end{document}
 

@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{Sweave}
+\SweaveOpts{prefix.string=plots/pl}
 \author{Dorottya Cserpan}
 
 \begin{document}
@@ -25,9 +26,6 @@ library('corpcor')
 #kulonbozo a bazisfuggvenyek szama
 #mas az atfedes aranya
 
-
-
-
 ####################################
 #########   FUNCTIONS
 
@@ -35,15 +33,13 @@ library('corpcor')
 interpol<-function(xbe,y,xki){
 inter<-splinefun(xbe,y,method="monoH.FC")
 out<-inter(xki)
-#out<-spline(xbe,y,xout=xki)
-
 return(out)
 }
 #######
 
 
 #####################################x
-#BEOLVASA
+#GETTING DATA AND PARAMETERS
 #1D kCSD for cells
 #reading in the middle points of the segments
 seg.kord<-as.matrix(read.table('coordsmid_x_y_z'))
@@ -54,6 +50,9 @@ seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
 seg.db<-length(seg.diam)
 #time
 time<-as.matrix(read.table('time'))
+
+#cell to electrode distance
+d<-as.matrix(read.table("elprop"))[1]
 
 #length of the segments
 seg.length<-as.matrix(read.table('seglength'))
@@ -68,19 +67,18 @@ sigma<-as.matrix(read.table('elprop'))[2] #sigma
 memb.currents<-as.matrix(read.table('membcurr'))
 #stimulalo aram
 #stim.currents<-as.matrix(read.table('stimcur'))
-#A stimulalas is bele megy a sejtbe, az is szami
-#memb.currents[1,]<-memb.currents[1,]-stim.currents
 
 #Let's calculate the current density
-seg.volume<-seg.length*pi*(seg.diam/2)^2
-seg.surface<-seg.length*2*pi*(seg.diam/2)
-funoszt<-function(x) x/seg.volume
+seg.volume<-seg.length*pi*(seg.diam/2)^2 #volume of a segment
+seg.surface<-seg.length*2*pi*(seg.diam/2) #surface of a segment
+funoszt<-function(x) x/seg.volume 
 funaramsur<-function(x) x*seg.surface
 funaramvonal<-function(x) x/seg.length
-memb.currents.vonal<-apply(memb.currents,2,funaramvonal)
-memb.currents.tot<-apply(memb.currents,2,funaramsur)
-memb.currents.density<-apply(memb.currents,2,funoszt)
-#kiszamolom en az LFP-t
+memb.currents.vonal<-apply(memb.currents,2,funaramvonal) #line CSD
+memb.currents.tot<-apply(memb.currents,2,funaramsur) #surface CSD
+memb.currents.density<-apply(memb.currents,2,funoszt) #volume CSD
+
+#transfer matrix for sCSD
 xi<-elec.kord
 xj<-seq(0,500,length.out=el.nb)
 T<-array(0,c(el.nb,el.nb))
@@ -94,7 +92,7 @@ T[i,j]<-1/sqrt(sum((xi[i,3]-xj[j])^2+d^2))
 
 #lfp
 LFP<-as.matrix(read.table('myLFP'))
-#MOST az altalam hasznalt LFP.t hasznaljuk!!!
+
 #LFP<-LFP.calc/1000000 #most mV-ban van
 @
 
@@ -106,13 +104,16 @@ Parameters:
 #Parameters
 
 #M<-15#number of sources (a feltételezett források szama a sejten)
-M<-seg.db
+M<-seg.db #number of sources are same as number of segments
 d<-as.matrix(read.table('elprop'))[1] #distance of electrode
 
-R<- 30 #width of Gaussian or length of step funtion
-delta<-cell.length/M #shift of overlapping sources
-base<-'step' #type of base function ('step', 'Gaussian')
+#R<- 20 #width of Gaussian or length of step funtion
+R<-as.numeric(read.table('basewidth.txt'))
+delta<-cell.length/M #shift of overlapping sources on average
+#base<-'step' #type of base function ('step', 'Gaussian')
 #base<-'gauss'
+base<-paste(readLines('basetype.txt')) #getting it from a text file made by the .sh file
+#printing the parameters to the pdf file 
 cat(paste('Number of electrodes:',el.nb))
 cat(paste('Number of base functions:',M))
 cat(paste('Type of base functions:',base))
@@ -136,13 +137,13 @@ cat('Dimension 	  [μm]')
 
 <<bazisfgv,echo=FALSE>>=
 #a bázisfüggvények középpontjai
-#most tudom, hogy 500 mikron hosszú a sejt és egyenes
+
 source.cord<-array(0,c(M,3))
 #for (i in 1:M) source.cord[i,3]<-(i-1)*delta
 source.cord[,3]<-seg.kord[,3]
 
 
-const<-1/(4*pi*sigma) #reméljük, hogy ők is um-erben mérik a távolságot
+const<-1/(4*pi*sigma) 
 
 ####################### kCSD
 
@@ -154,7 +155,7 @@ b.tilda.i<-function(i,R,source.cord,r.t)
 out<-numeric()
 if (base=='gauss') out<-exp(-(source.cord[i,3]-r.t[3])^2/(2*R))
 if (base=='step'){ 
-if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=R^2)
+if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=0.001) #ez itt nem 1D
 out<-1
  #véletlenszerűen beállított
 else out<-0
@@ -170,14 +171,16 @@ fun<-function(r.t){
 if (base=='gauss') ff<- exp(-sum(source.cord[i,3]-r.t[3])^2/(2*R))/sqrt(sum((r-r.t)^2))
 
 if (base=='step'){
-if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=10^2) ff<- 1/sqrt(sum((r-r.t)^2))
+if ((r.t[3] >= (source.cord[i,3])-R/2 ) && (r.t[3] <= (source.cord[i,3])+R/2 )&& (r.t[1]^2+r.t[2]^2)<=0.001) ff<- 1/sqrt(sum((r-r.t)^2))
 else ff<-0
 }
 
 return(ff)
 }
 
+#solved by 3D integration
 integralt<-cuhre(3,1,fun,lower=as.vector(c(0,0,source.cord[i,3]-R)),upper=as.vector(c(0.001,0.001,source.cord[i,3]+R)),flags=list(verbose=0))
+#integralt<-integrate(fun, -Inf, Inf)
 
 #bi.value<-const*integralt$value
 bi.value<-integralt$value
@@ -302,9 +305,10 @@ C<-C/10^6 #a sigmaban cm^2-et használnak
 
 @
 
-Nem vagyok benne biztos, hogy ez jó...
-Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
-<<Cstar,fig=TRUE,echo=FALSE>>=
+%Nem vagyok benne biztos, hogy ez jó...
+%Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
+%<<Cstar,fig=TRUE,echo=FALSE>>=
+<<Cstar,echo=FALSE>>=
 amplitudes<-array(0,c(seg.db,M))
 #b.tilda.i<-function(i,R,source.cord,r.t)
 #out<-exp(-sum((source.cord[i,]-r.t)^2)/(2*R))
@@ -314,8 +318,8 @@ for(k in 1: seg.db){
 	}
 }
 #image(1:seg.db,1:M,amplitudes)
-C.star<-amplitudes%*%C
-matplot(t(C.star),t='l')
+#C.star<-amplitudes%*%C
+#matplot(t(C.star),t='l')
 #C<-C.star
 @
 
@@ -349,15 +353,19 @@ min.memb.currents<-min(memb.currents)
 max.C<-max(C)
 min.C<-min(C)
 rmse.snap<-array(0,c(1,length(time)))
+#normalizes rmse
+nrmse.snap<-array(0,c(1,length(time)))
 for(i in 1:length(time)){
 memb.currents.interpol[,i]<-interpol(seg.kord[,3],memb.currents[,i]/(-min.memb.currents),c(seq(0,cell.length,length.out=hany.pont)))
 C.interpol[,i]<-interpol(source.cord[,3],C[,i],seg.kord[,3])
 #C.interpol[,i]<-interpol(source.cord[,3],C[,i]/(-min.C),c(seq(0,cell.length,length.out=hany.pont)))
 #rmse.snap[i]<-sqrt(mean((memb.currents.interpol[,i]-C.interpol[,i])^2))
 rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C[,i])^2))
+nrmse.snap[i]<-rmse.snap[i]/(max(memb.currents[,i])-min(memb.currents[,i]))
 }
 #rmse.total<-sqrt(mean((memb.currents.interpol-C.interpol)^2))
 rmse.total<-sqrt(mean((memb.currents-C)^2))
+nrmse.total<-rmse.total/(max(memb.currents)-min(memb.currents))
 
 #par(mfrow=c(3,1))
 #matplot(t(C.interpol),t='l')
@@ -379,8 +387,11 @@ legend('topright',db[-1],db[-1],pch=NULL, col=db[-1],lty=1:6)
 
 
 <<echo=FALSE,fig=TRUE>>=
+par(mfrow=c(1,2))
 plot(time,c(rmse.snap),t='l',main='RMSE')
+plot(time,c(nrmse.snap),t='l',main='Normalized RMSE')
 cat(paste("Overall RMSE",rmse.total))
+cat(paste("Overall normalized RMSE",nrmse.total))
 @
 
 <<CSD, echo=FALSE,fig=TRUE>>=
@@ -434,6 +445,7 @@ I.sCSD.interpol[,i]<-interpol(xj,I.sCSD[,i],seg.kord[,3])
 @
 
 Spatial distribution at spike:
+
 <<spatialspike, echo=FALSE,fig=TRUE>>=
 spikehol<-which(memb.currents == min(memb.currents),arr.ind=TRUE)[2]
 plot(seg.kord[,3],memb.currents[,spikehol],t='l',xlab='y (um)',ylab='current (nA)',main='Comparison of methods at the peak of the spike')
@@ -444,7 +456,7 @@ lines(seg.kord[,3],C[,spikehol],col='BLUE')
 legend('bottomright',c('OMC','kCSD'), col=c('BLACK','BLUE'),lty=1)
 @
 
-<<spatialspike2, echo=FALSE,fig=TRUE>>=
+<<spatialspike2, echo=FALSE,fig=FALSE>>=
 plot(seg.kord[,3],memb.currents[,spikehol],t='l',xlab='y (um)',ylab='current (nA)',main='Comparison of methods at the peak of the spike')
 lines(seg.kord[,3],CSD.trad.interpol[,spikehol],col='RED')
 lines(seg.kord[,3],C[,spikehol],col='BLUE')
@@ -458,6 +470,30 @@ rmse.spike<-sqrt(mean((C[,spikehol]-memb.currents[,spikehol])^2))
 @
 <<rmsespike, echo=FALSE>>=
 cat(paste("Spike rmse:", rmse.spike ))
+
+#Writing out the data and other infos:
+dir.create('out')
+#original membrane current
+#name.output.OMC<-paste('out/OMC_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(memb.currents,name.output.OMC,col.names=FALSE, row.names=FALSE)
+#calculated membrane current
+name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(C,name.output.ksCSD,col.names=FALSE, row.names=FALSE)
+#snap RMSE
+name.output.tRMSE<-paste('out/tRMSE_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(rmse.snap, name.output.tRMSE,col.names=FALSE, row.names=FALSE)
+name.output.ntRMSE<-paste('out/normtRMSE_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(nrmse.snap, name.output.ntRMSE,col.names=FALSE, row.names=FALSE)
+name.output.RMSE.total<-paste('out/RMSEtot_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(rmse.total, name.output.RMSE.total,col.names=FALSE, row.names=FALSE)
+name.output.nRMSE.total<-paste('out/normRMSEtot_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+write.table(nrmse.total, name.output.nRMSE.total,col.names=FALSE, row.names=FALSE)
+
+#parameters
 @
+
+
+
+
 \end{document}
 

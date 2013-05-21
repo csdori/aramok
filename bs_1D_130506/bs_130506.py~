@@ -1,14 +1,21 @@
 import LFPy
 import numpy as np
 import matplotlib.pylab as pl
+import sys
+#import os
 
+#itt a bemenetek 3 spike-ot valtottak ki
 #location of the output files
 outname='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_1D_130506/'
 
 #set cell to electrode distance
-d=30
+f1 = open('celleldist.txt', 'r')
+dist = [line.strip() for line in f1]
+d = int(dist[0])
+f1.close()
+#d = 10
 #number of electrodes
-elecnumb=16
+elecnumb=15
 ###################x
 #Plotting
 
@@ -121,7 +128,9 @@ cell_parameters = {
     	'e_pas' : -65,              # reversal potential passive mechs
 	'nsegs_method' :  'fixed_length',
 #	'fixed_length': 20, # method for setting number of segments,
-	'max_nsegs_length':30,
+	'max_nsegs_length':10, #igy kapunk 52 szegmenst
+#	'max_nsegs_length':20, #igy kapunk 27 szegmenst
+#	'max_nsegs_length':30, #igy kapunk 18 szegmenst
 #	'lambda_f' : 500,           # segments are isopotential at this frequency
     'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/active.hoc'], # will run this file
 }
@@ -229,7 +238,7 @@ elprop=np.hstack(
 )
 np.savetxt(outname + 'elprop',elprop)
 # Plotting of simulation results:
-plotstuff(cell, electrode)
-pl.show()
+#plotstuff(cell, electrode)
+#pl.show()
 
 

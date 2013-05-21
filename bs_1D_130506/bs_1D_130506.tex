@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{Sweave}
+
 \author{Dorottya Cserpan}
 
 \begin{document}
@@ -19,25 +20,25 @@ Parameters:
 
 \begin{Schunk}
 \begin{Soutput}
-Number of electrodes: 10
+Number of electrodes: 20
 \end{Soutput}
 \begin{Soutput}
-Number of base functions: 18
+Number of base functions: 27
 \end{Soutput}
 \begin{Soutput}
 Type of base functions: step
 \end{Soutput}
 \begin{Soutput}
-Width of base functions: 30 um
+Width of base functions: 20 um
 \end{Soutput}
 \begin{Soutput}
 sigma: 0.5
 \end{Soutput}
 \begin{Soutput}
-Shift of overlapping of base functions: 27.7777777777778 um
+Shift of overlapping of base functions: 18.5185185185185 um
 \end{Soutput}
 \begin{Soutput}
-Cell to electrode distance: 30
+Cell to electrode distance: 60
 \end{Soutput}
 \end{Schunk}
 
@@ -62,48 +63,60 @@ Dimension 	  [μm]
 
 \begin{Schunk}
 \begin{Soutput}
-X11cairo 
-       2 
+pdf 
+  2 
 \end{Soutput}
 \end{Schunk}
-\includegraphics{bs_1D_130506-setup}
+\includegraphics{plots/pl-setup}
 
-\includegraphics{bs_1D_130506-elefpes}
-
-
-
-Nem vagyok benne biztos, hogy ez jó...
-Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
-\includegraphics{bs_1D_130506-Cstar}
-
-\includegraphics{bs_1D_130506-membcurrentplot}
-
-\includegraphics{bs_1D_130506-imagemebc}
+\includegraphics{plots/pl-elefpes}
 
 
+\begin{Schunk}
+\begin{Soutput}
 
-\includegraphics{bs_1D_130506-tobbiresz}
+\end{Soutput}
+\end{Schunk}
+
+%Nem vagyok benne biztos, hogy ez jó...
+%Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
+%<<Cstar,fig=TRUE,echo=FALSE>>=
+
+\includegraphics{plots/pl-membcurrentplot}
+
+\includegraphics{plots/pl-imagemebc}
+
+
+
+\includegraphics{plots/pl-tobbiresz}
 
 
 
 \begin{Schunk}
 \begin{Soutput}
-Overall RMSE 0.0110068825671664
+Overall RMSE 0.150206644976077
+\end{Soutput}
+\begin{Soutput}
+Overall normalized RMSE 0.0405561194567369
 \end{Soutput}
 \end{Schunk}
-\includegraphics{bs_1D_130506-014}
+\includegraphics{plots/pl-014}
 
-\includegraphics{bs_1D_130506-CSD}
+\includegraphics{plots/pl-CSD}
 
 
 Spatial distribution at spike:
-\includegraphics{bs_1D_130506-spatialspike}
 
-\includegraphics{bs_1D_130506-spatialspike2}
+\includegraphics{plots/pl-spatialspike}
+
 \begin{Schunk}
 \begin{Soutput}
-Spike rmse: 0.0517455859301027
+Spike rmse: 0.706216417492308
 \end{Soutput}
 \end{Schunk}
+
+
+
+
 \end{document}
 
