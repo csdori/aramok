@@ -1,10 +1,10 @@
-place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/out0516/'
+place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/out0521/'
+saving.location<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/out0521/comparison'
 
-
-mit<-'measurecurr'
-#mit<-'meaure1'
+#mit<-'measurecurr'
+mit<-'meaure1'
 #mit<-'normRMSEtot'
-
+#mit<-'measurepeak'
 parameters<-c('BF.type', 'BF.width','BF.number','SEG.number', 'EL.number', 'EL.shift', 'DIST.10','DIST.20','DIST.30','DIST.40', 'DIST.50','DIST.60')
 
 BF.type<-c('gauss','step', 'sinxpx','cos')
@@ -38,21 +38,40 @@ measures[(6+dist),j]<-as.numeric(read.table(file.name))
 } #bf.width
 } #bf.type
 dimnames(measures)<-list(parameters,colnames)
-whichones<-which(measures[1,]=='gauss')
-par(mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
-matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main='RMSE in case of different gaussian basis functions')
- legend('topright',  inset=c(-0.6,0),colnames[whichones],
-            lty = 1:5, lwd = 1,col=1:6)
 
-whichones<-which(measures[1,]=='sinxpx')
+##############################################
+############ PLotting x=dist y=error for different BFs
+###################################################
+for(bf in 1: length(BF.type)){
+whereto<-paste(saving.location,'/x_dist_y_',mit,'_',BF.type[bf],sep='')
+png(whereto)
+whichones<-which(measures[1,]==BF.type[bf])
 par(mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
-matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main='RMSE in case of different sinxpx basis functions')
+maintitle<-paste(mit,'in case of different',BF.type[bf] ,'basis functions' )
+matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main=maintitle)
  legend('topright',  inset=c(-0.6,0),colnames[whichones],
             lty = 1:5, lwd = 1,col=1:6)
+dev.off()
+}
 
-whichones<-which(measures[3,]=='40')
+
+##############################################
+############ PLotting x=dist y=error for nb of BFs
+###################################################
+
+for(bf in 1: length(BF.number)){
+whereto<-paste(saving.location,'/x_dist_y_',mit,'_bfnb_',BF.number[bf],sep='')
+png(whereto)
+whichones<-which(measures[3,]==BF.number[bf])
 par(mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
-matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main='RMSE in case of 40 basis functions')
+maintitle<-paste(mit,'in case of ',BF.number[bf] ,'basis functions' )
+matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main=maintitle)
  legend('topright',  inset=c(-0.6,0),colnames[whichones],
             lty = 1:5, lwd = 1,col=1:6)
+dev.off()
+}
+
+
+
+
 

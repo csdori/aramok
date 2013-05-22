@@ -48,10 +48,6 @@ seg.cord<-matrix(seg.cord,ncol=3)
 sorrend<-c(order(seg.cord[,3]))
 seg.kord<-seg.cord[sorrend,]
 
-#where do we want to ge the values of currents
-where.cord<-seg.kord
-where.db<-dim(where.cord)[1]
-
 
 seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
 seg.start<-seg.start[sorrend,]
@@ -60,6 +56,13 @@ seg.end<-seg.end[sorrend,]
 seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
 seg.diam<-seg.diam[sorrend,]
 seg.db<-length(seg.diam)
+
+
+#where do we want to ge the values of currents
+where.db<-100
+where.cord<-matrix(0,nrow=100,ncol=3)
+where.cord[,3]<-seq(seg.end[1,3],seg.end[seg.db,3],length.out=100)
+
 #time
 time<-as.matrix(read.table('time'))
 
@@ -443,11 +446,19 @@ out<-ifelse((x!=0), sin(4*pi/R*x)/(4*pi/R*x),1)
 return(out)}
 sinxintc<-integrate(sinxx,-R/2,R/2)$value
 #if (base=='sinxpx') C.curr<- sinxintc*C #step function eset 
-C.curr<-C
-for (i in 1: seg.db) C.curr[i,]<-C[i,]*seg.length[i]
+#C.curr.many<-C
+#for (i in 1: where.db) C.curr.many[i,]<-C[i,]*(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
+#A density fgv-t kiintegralva kapjuk meg az aramot!!
+C.curr<-array(0,dim(memb.currents))
+piece.length<-(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
+for(t in 1:length(time)){
+inter<-splinefun(where.cord[,3],C[,t],method="monoH.FC")
+for(db2 in 1:seg.db ) {output<-integrate(inter,seg.kord[db2,3]-seg.length[db2]/2,seg.kord[db2,3]+seg.length[db2]/2)
+C.curr[db2,t]<-output$value
+}
+
+}
 C.dens<-C
-
-
 #Check whether the sum of current is 0
 
 memb.current.colsum<-colSums(memb.currents)
@@ -490,9 +501,17 @@ limitsodcurr<-max(abs(max(C.curr,memb.currents)))
 matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
 matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
 legend('topright',db,db, col=db,lty=1:6,bg="WHITE",inset=c(-0.6,0),ncol=2)
-
-
 @
+
+
+<<peakes,fig=TRUE,echo=FALSE>>=
+plot(seg.kord[,3],memb.currents[,min.indexes[2]],t='l',main='Currents at the peak of the %spike',ylim=c(-2,1.5))
+lines(seg.kord[,3],C.curr[,min.indexes[2]],col='RED')
+legend('topright',c('Original', 'Estimated'),lty=1,col=c('BLACK','RED'))
+@
+
+
+
 
 <<imagemebc,fig=TRUE,echo=FALSE>>=
 
@@ -500,12 +519,13 @@ legend('topright',db,db, col=db,lty=1:6,bg="WHITE",inset=c(-0.6,0),ncol=2)
 limitsodcurr<-range(C.curr,memb.currents)
 par(mfrow=c(2,1))
 image.plot(time,seg.kord[,3],t(memb.currents),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-image.plot(time,where.cord[,3],t(C.curr),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(time,seg.kord[,3],t(C.curr),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 
 
 @
-
-<<splineinterpol,echo=FALSE,fig=TRUE>>=
+%bs_1D_130509_maradekkedd.Rnw
+<<splineinterpol,echo=FALSE,fig=FALSE>>=
+if(0==1){
 #spline interpolaljuk a függvényt, és ugyanazokban a a pontokban számítsuk ki az eltérést...
 #egyenlore elteresek van az eredeti és számolt áramok nagyságrendjében, ezért 1-re normáltjukkal számoljunk
 #legyenek az interpolációs pontok ugyanazok, mint a source pontok???
@@ -528,69 +548,73 @@ limitsodcurr<-range(C.dens,memb.current.dens)
 par(mfrow=c(2,1))
 image.plot(time,seg.kord[,3],t(memb.current.dens),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 image.plot(time,where.cord[,3],t(C.dens),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-
+}
 @
 
 After interpolating:
 
-<<splineinterpol2,echo=FALSE,fig=TRUE>>=
+<<splineinterpol2,echo=FALSE,fig=FALSE>>=
 ####################xinterpolation
-
+if(0==1){
 hany.pont<-40
 memb.currents.dens.interpol<-array(0,c(hany.pont, ido.nb))
 C.dens.interpol<-array(0,c(hany.pont, ido.nb))
+
+interpol.limit<-c(seq(-50,550,length.out=hany.pont))
+for(i in 1:length(time)){
+memb.currents.dens.interpol[,i]<-interpol(seg.kord[,3],memb.current.dens[,i],interpol.limit)
+C.dens.interpol[,i]<-interpol(where.cord[,3],C.dens[,i],interpol.limit)
+}
+par(mfrow=c(2,1))
+limitsodcurr<-range(C.dens,memb.current.dens)
+image.plot(time,interpol.limit,t(memb.currents.dens.interpol),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(time,interpol.limit,t(C.dens.interpol),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+
+}
 rmse.snap<-array(0,c(1,length(time))) 
 measure1<-numeric()
 #normalizes rmse
 nrmse.snap<-array(0,c(1,length(time)))
 error.t<-array(0,c(1,length(time))) #normalied error for evrey time
-interpol.limit<-c(seq(-50,550,length.out=hany.pont))
-for(i in 1:length(time)){
-memb.currents.dens.interpol[,i]<-interpol(seg.kord[,3],memb.current.dens[,i],interpol.limit)
-C.dens.interpol[,i]<-interpol(where.cord[,3],C.dens[,i],interpol.limit)
 
 rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C.curr[,i])^2))
 nrmse.snap[i]<-rmse.snap[i]/sqrt(mean((memb.currents[,i]^2)))
 #nrmse.snap[i]<-rmse.snap[i]/(max(memb.currents[,i])-min(memb.currents[,i]))
-error.t[i]<-sum((memb.currents.dens.interpol[,i]-C.dens.interpol[,i])^2)#/sum(memb.currents.dens.interpol[,i]^2)
+#error.t[i]<-sum((memb.currents.dens.interpol[,i]-C.dens.interpol[,i])^2)#/sum(memb.currents.dens.interpol[,i]^2)
 
-}
 
 measure1<-sum(abs(C.curr-memb.currents))/sum(abs(C.curr))
 rmse.total<-sqrt(mean((memb.currents-C.curr)^2))
 nrmse.total<-rmse.total/sqrt(mean((memb.currents^2)))
 
 
-par(mfrow=c(2,1))
-limitsodcurr<-range(C.dens,memb.current.dens)
-image.plot(time,interpol.limit,t(memb.currents.dens.interpol),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-image.plot(time,interpol.limit,t(C.dens.interpol),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+
 
 
 #parameters
 @
-
+%bs_1D_130509_maradekkedd.Rnw
 <<writingtofiles,echo=FALSE>>=
 #name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
 #write.table(C,name.output.ksCSD,col.names=FALSE, row.names=FALSE)
 #snap RMSE
-name.output.tRMSE<-paste('out0516/tRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.tRMSE<-paste('out0521/tRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 #write.table(rmse.snap, name.output.tRMSE,col.names=FALSE, row.names=FALSE)
-name.output.ntRMSE<-paste('out0516/normtRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.ntRMSE<-paste('out0521/normtRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 #write.table(nrmse.snap, name.output.ntRMSE,col.names=FALSE, row.names=FALSE)
-name.output.RMSE.total<-paste('out0516/RMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.RMSE.total<-paste('out0521/RMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 #write.table(rmse.total, name.output.RMSE.total,col.names=FALSE, row.names=FALSE)
-name.output.nRMSE.total<-paste('out0516/normRMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.nRMSE.total<-paste('out0521/normRMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(nrmse.total, name.output.nRMSE.total,col.names=FALSE, row.names=FALSE)
 
 
-name.output.measure1<-paste('out0516/meaure1_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure1<-paste('out0521/meaure1_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(measure1, name.output.measure1,col.names=FALSE, row.names=FALSE)
 
-name.output.measure.curr<-paste('out0516/measurecurr_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure.curr<-paste('out0521/measurecurr_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(measure.curr, name.output.measure.curr,col.names=FALSE, row.names=FALSE)
 
-name.output.measure.peak<-paste('out0516/measurepeak_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure.peak<-paste('out0521/measurepeak_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(measure.peakness, name.output.measure.peak,col.names=FALSE, row.names=FALSE)
 
 @
