@@ -131,12 +131,13 @@ cell_parameters = {
 	'passive' : True,
     	'v_init' : -65,             # initial crossmembrane potential
     	'e_pas' : -65,              # reversal potential passive mechs
-#	'nsegs_method' :  'fixed_length',
+	'nsegs_method' :  'fixed_length',
 #	'fixed_length': 20, # method for setting number of segments,
-#	'max_nsegs_length':10, #igy kapunk 52 szegmenst
+	'max_nsegs_length':5, #igy kapunk 52 szegmenst
 #	'max_nsegs_length':20, #igy kapunk 27 szegmenst
 #	'max_nsegs_length':30, #igy kapunk 18 szegmenst
-	'lambda_f' : 500,           # segments are isopotential at this frequency
+#	'nsegs_method' : 'lambda_f',
+#	'lambda_f' : 1000,           # segments are isopotential at this frequency
     'custom_code'  : ['/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/active.hoc'], # will run this file
 }
 
@@ -152,8 +153,8 @@ electrodeParameters = {
     'x' : x,        # x,y,z-coordinates of contact points
     'y' : y,
     'z' : z,
-     'method' : 'som_as_point',  #treat soma segment as sphere source
-     #'method' : 'pointsource'
+#     'method' : 'som_as_point',  #treat soma segment as sphere source
+     'method' : 'pointsource'
      #'method' : 'linesource'
 }
    

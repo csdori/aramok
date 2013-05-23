@@ -47,7 +47,7 @@ do
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	cp bs_1D_130509line.pdf out0521/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
+	cp bs_1D_130509line.pdf out_test/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done
@@ -102,7 +102,7 @@ do
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	cp bs_1D_130509line.pdf out0521/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
+	cp bs_1D_130509line.pdf out_test/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done
@@ -155,7 +155,7 @@ do
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	cp bs_1D_130509line.pdf out0521/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
+	cp bs_1D_130509line.pdf out_test/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done
@@ -208,7 +208,7 @@ do
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	cp bs_1D_130509line.pdf out0521/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
+	cp bs_1D_130509line.pdf out_test/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done

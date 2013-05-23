@@ -42,73 +42,79 @@ return(out)
 #GETTING DATA AND PARAMETERS
 #1D kCSD for cells
 #reading in the middle points of the segments
-seg.cord<-as.matrix(read.table('coordsmid_x_y_z'))
-seg.cord<-matrix(seg.cord,ncol=3)
-#seg.kord<-matrix(0,c(dim(seg.cord)))
-sorrend<-c(order(seg.cord[,3]))
-seg.kord<-seg.cord[sorrend,]
 
 
-seg.start<-matrix(as.matrix(read.table('coordsstart_x_y_z')),ncol=3)
-seg.start<-seg.start[sorrend,]
-seg.end<-matrix(as.matrix(read.table('coordsend_x_y_z')),ncol=3)
-seg.end<-seg.end[sorrend,]
-seg.diam<-as.matrix(read.table('segdiam_x_y_z'))
-seg.diam<-seg.diam[sorrend,]
-seg.db<-length(seg.diam)
+
+###################
+####### Generating test distributions
+#####################
+seg.nb<-100
+seg.kord<-array(0,c(seg.nb,3))
+seg.kord[,3]<-seq(0,600,length.out=seg.nb)
+seg.length<-rep((range(seg.kord[,3])[2]-range(seg.kord[,3])[1])/(seg.nb-1),seg.nb)
+seg.cord<-seg.kord
+seg.start<-array(0,c(seg.nb,3))
+seg.start[,3]<-seg.kord[,3]-seg.length/2
+seg.end<-array(0,c(seg.nb,3))
+seg.end[,3]<-seg.kord[,3]+seg.length/2
+
+
+distribution.nb<-12
+time<-1:length(distribution.nb)
+memb.currents<-array(0,c(seg.nb,distribution.nb))
+
+
+
+
+
 
 
 #where do we want to ge the values of currents
-where.db<-100
-where.cord<-matrix(0,nrow=100,ncol=3)
-where.cord[,3]<-seq(seg.end[1,3],seg.end[seg.db,3],length.out=100)
+where.db<-30
+where.cord<-matrix(0,nrow=where.db,ncol=3)
+where.cord[,3]<-seq(seg.start[1,3],seg.end[seg.nb,3],length.out=where.db)
 
-#time
-time<-as.matrix(read.table('time'))
 
 #cell to electrode distance
-d<-as.matrix(read.table("elprop"))[1]
+d<-as.matrix(read.table('celleldist.txt'))
 
-#length of the segments
-seg.length<-as.matrix(read.table('seglength'))
-seg.length<-seg.length[sorrend,]
-cell.length<-sum(seg.length)
+
+cell.length<-seg.length*seg.nb
 #coordinates of electrode
-elec.kord<-as.matrix(read.table('elcoord_x_y_z'))
-elec.kord<-matrix(elec.kord,ncol=3)
+el.nb<-16
+elec.kord<-array(0,c(el.nb,3))
+elec.kord[,1]<-d
+elec.kord[,3]<-seq(-50,650,length.out=16)
 elec.dist<-elec.kord[2,3]-elec.kord[1,3]
-el.nb<-dim(elec.kord)[1] #number of electrodes
-sigma<-as.matrix(read.table('elprop'))[2] #sigma
-#membrane currents
-memb.currents<-as.matrix(read.table('membcurr'))
-memb.currents<-memb.currents[sorrend,]
-#stimulalo aram
-#stim.currents<-as.matrix(read.table('stimcur'))
 
-#Let's calculate the current density
-#seg.volume<-seg.length*pi*(seg.diam/2)^2 #volume of a segment
-#seg.surface<-seg.length*2*pi*(seg.diam/2) #surface of a segment
-#funoszt<-function(x) x/seg.volume 
-#funaramsur<-function(x) x*seg.surface
-#funaramvonal<-function(x) x/seg.length
-#memb.currents.vonal<-apply(memb.currents,2,funaramvonal) #line CSD
-#memb.currents.tot<-apply(memb.currents,2,funaramsur) #surface CSD
-#memb.currents.density<-apply(memb.currents,2,funoszt) #volume CSD
+sigma<-0.5
+###############################
+##############xdifferent input functions 1 a maximális értékük
+########################################
+memb.currents[,1]<-(c(1:100)-50)/50
+memb.currents[,10]<--abs(c(1:100)-50)/50
+memb.currents[,11]<-abs(c(1:100)-50)/50
+memb.currents[,2]<-sin(pi/100*c(1:100))
+memb.currents[,3]<-sin(2*pi/100*c(1:100))
+memb.currents[,4]<-sin(3*pi/100*c(1:100))
+memb.currents[,5]<-sin(4*pi/100*c(1:100))
+memb.currents[,6]<-sin(5*pi/100*c(1:100))
+memb.currents[,7]<-sin(6*pi/100*c(1:100))
+memb.currents[,8]<-sin(7*pi/100*c(1:100))
+memb.currents[,9]<-sin(8*pi/100*c(1:100))
+memb.currents[,12]<--abs(c(1:100)-50)/50*sin(1:100)
 
 #transfer matrix for sCSD
 xi<-elec.kord
-xj<-seq(0,500,length.out=el.nb)
-T<-array(0,c(el.nb,el.nb))
+xj<-seg.kord
+T<-array(0,c(el.nb,seg.nb))
 for(i in 1:el.nb){
-for(j in 1:el.nb){
-T[i,j]<-1/sqrt(sum((xi[i,3]-xj[j])^2+d^2))
+for(j in 1:seg.nb){
+T[i,j]<-1/sqrt(sum((xi[i,]-xj[j,])^2))
 }#j
 }#i
-#LFP.calc<-1/(4*pi*sigma)*T%*%memb.currents
+LFP<-1/(4*pi*sigma)*T%*%memb.currents
 
-
-#lfp
-LFP<-as.matrix(read.table('myLFP'))
 
 #LFP<-LFP.calc/1000000 #most mV-ban van
 @
@@ -121,12 +127,13 @@ Parameters:
 #Parameters
 
 M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett források szama a sejten)
-#M<-seg.db #number of sources are same as number of segments
-d<-as.matrix(read.table('elprop'))[1] #distance of electrode
+#M<-seg.nb #number of sources are same as number of segments
+
 
 #R<- 20 #width of Gaussian or length of step funtion
 R<-as.numeric(read.table('basewidth.txt'))
-delta<-cell.length/(M) #shift of overlapping sources on average
+
+delta<-cell.length[1]/(M) #shift of overlapping sources on average
 #delta<-cell.length/(M) 
 #base<-'step' #type of base function ('step', 'Gaussian')
 #base<-'gauss'
@@ -134,7 +141,7 @@ base<-paste(readLines('basetype.txt')) #getting it from a text file made by the 
 #printing the parameters to the pdf file 
 cat(paste('Number of electrodes:',el.nb))
 cat(paste('Number of base functions:',M))
-cat(paste('Number of segments:',seg.db))
+cat(paste('Number of segments:',seg.nb))
 cat(paste('Type of base functions:',base))
 cat(paste('Width of base functions:',R, 'um'))
 cat(paste('sigma:',sigma))
@@ -171,8 +178,10 @@ const<-1/(4*pi*sigma)
 #r_t ahol ki akarom számolni
 a<-numeric() #one point of line
 b<-numeric() #other point on the line
-a<-seg.kord[1,]
-b<-seg.kord[seg.db,]
+#a<-seg.kord[1,]
+#b<-seg.kord[seg.nb,]
+a<-source.cord[1,]
+b<-source.cord[M,]
 
 b.tilda.i<-function(i,R,source.cord,cord)
 {
@@ -264,17 +273,17 @@ return(bi.value)
 # ki kene rajzolni a neuronos szegmenseket, vastagsag stb
 #merolegesen rarajzolni a bazisfuggvenyeket
 
-db<-1:length(seg.diam)
+db<-seg.nb
 setwd(hovament)
 @
 
 <<setup,fig=TRUE,echo=FALSE>>=
 
 
-plot(elec.kord[,1],elec.kord[,3],xlim=c(-35,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(seg.start[1,3]-10,seg.end[seg.db,3]-10))
+plot(elec.kord[,1],elec.kord[,3],xlim=c(-35,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(seg.start[1,3]-10,seg.end[seg.nb,3]-10))
 points(seg.kord[,1],seg.kord[,3],pch=20)
 points(source.cord[,1],source.cord[,3],col='RED')
-rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
+#rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
 
 if (base=='step'){
 rect(-30,source.cord[1:M,3]-R/2,-20,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
@@ -315,7 +324,7 @@ png("elrendezes.png",width=400, height=400)
 plot(elec.kord[,1],elec.kord[,3],xlim=c(-50,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup")
 points(seg.kord[,1],seg.kord[,3],pch=20)
 points(source.cord[,1],source.cord[,3],col='RED')
-rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
+#rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
 
 #rect(-40,source.cord[1:M,3]-R/2,-30,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
 
@@ -335,7 +344,7 @@ More detailed setup:
 <<setup2,fig=TRUE,echo=FALSE>>=
 coloursline<-rainbow(7)
 plot(elec.kord[,1],elec.kord[,3],xlim=c(-83,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(-50,50))
-rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3],col="seashell1")
+#rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3],col="seashell1")
 points(seg.kord[,1],seg.kord[,3],pch=20,lwd=3)
 points(source.cord[,1],source.cord[,3],col=coloursline,pch=20,lwd=2)
 
@@ -384,8 +393,8 @@ legend("topleft",c("centre of bf","middle of seg","electrodes"),col=c("RED","BLA
 
 #plotting LFP
 par(mfrow=c(2,1))
-matplot(time,t(LFP),t='l',xlab='time (ms)',ylab='LFP')
-image.plot(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(40))
+matplot(t(LFP),t='l',xlab='time (ms)',ylab='LFP')
+image.plot(t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(40))
 
 
 @
@@ -441,19 +450,15 @@ C<-1/const*t(K.tilda)%*%solve(K)%*%LFP#*1000000#hogy nV-ban legyen az LFP ,
 #if (base=='cos') C.curr<- 2/pi*R*C #step function eset 
 
 
-sinxx<- function (x) {
-out<-ifelse((x!=0), sin(4*pi/R*x)/(4*pi/R*x),1)
-return(out)}
-sinxintc<-integrate(sinxx,-R/2,R/2)$value
 #if (base=='sinxpx') C.curr<- sinxintc*C #step function eset 
 #C.curr.many<-C
 #for (i in 1: where.db) C.curr.many[i,]<-C[i,]*(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
 #A density fgv-t kiintegralva kapjuk meg az aramot!!
 C.curr<-array(0,dim(memb.currents))
 piece.length<-(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
-for(t in 1:length(time)){
+for(t in 1:distribution.nb){
 inter<-splinefun(where.cord[,3],C[,t],method="monoH.FC")
-for(db2 in 1:seg.db ) {output<-integrate(inter,seg.kord[db2,3]-seg.length[db2]/2,seg.kord[db2,3]+seg.length[db2]/2)
+for(db2 in 1:seg.nb ) {output<-integrate(inter,seg.kord[db2,3]-seg.length[db2]/2,seg.kord[db2,3]+seg.length[db2]/2)
 C.curr[db2,t]<-output$value
 }
 
@@ -463,8 +468,8 @@ C.dens<-C
 
 memb.current.colsum<-colSums(memb.currents)
 C.curr.colsum<-colSums(C.curr)
-plot(time,memb.current.colsum,t='l',main='Sum of Membrane Currents',ylim=range(memb.current.colsum,C.curr.colsum))
-lines(time,C.curr.colsum,col='RED')
+plot(memb.current.colsum,t='l',main='Sum of Membrane Currents',ylim=range(memb.current.colsum,C.curr.colsum))
+lines(C.curr.colsum,col='RED')
 legend('topright',c('Original', 'Estimated'),lty=1,col=c('BLACK','RED'))
 
 #measure based on the difference from the original membrane current (sum)
@@ -479,15 +484,15 @@ measure.peakness<--(min(C.curr)-mean(C.curr[-min.indexes[1],min.indexes[2]]))/sq
 %Most kell kiszámolni az adott pontforrásokban a különböző Gaussok amplitúdóját és azokat összeadni, ezt egy mátrixban a legegyszerűbb ábrázolni. A sorok a különböző pontforrásokat jelzik, az oszlopok a különböző Gauss függvényeket, a rácspontokban az amplitúdók állnak...
 %<<Cstar,fig=TRUE,echo=FALSE>>=
 <<Cstar,echo=FALSE>>=
-#amplitudes<-array(0,c(seg.db,M))
+#amplitudes<-array(0,c(seg.nb,M))
 #b.tilda.i<-function(i,R,source.cord,r.t)
 #out<-exp(-sum((source.cord[i,]-r.t)^2)/(2*R))
-#for(k in 1: seg.db){
+#for(k in 1: seg.nb){
 #	for (i in 1:M){
 #	amplitudes[k,i]<-b.tilda.i(i,R,source.cord,seg.kord[k,])
 #	}
 #}
-#image(1:seg.db,1:M,amplitudes)
+#image(1:seg.nb,1:M,amplitudes)
 #C.star<-amplitudes%*%C
 #matplot(t(C.star),t='l')
 #C<-C.star
@@ -498,8 +503,8 @@ par(mfrow=c(2,1),mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
 th.l<-min(C.curr,memb.currents)
 th.u<-max(C.curr,memb.currents)
 limitsodcurr<-max(abs(max(C.curr,memb.currents)))
-matplot(time,t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
-matplot(time,t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
+matplot(t(memb.currents),t='l',main='Membrane currents',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
+matplot(t(C.curr),t='l',main='Estimated MC',xlab="time (ms)", ylab="Current (nA)",ylim=c(th.l,th.u))
 legend('topright',db,db, col=db,lty=1:6,bg="WHITE",inset=c(-0.6,0),ncol=2)
 @
 
@@ -518,8 +523,8 @@ legend('topright',c('Original', 'Estimated'),lty=1,col=c('BLACK','RED'))
 
 limitsodcurr<-range(C.curr,memb.currents)
 par(mfrow=c(2,1))
-image.plot(time,seg.kord[,3],t(memb.currents),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-image.plot(time,seg.kord[,3],t(C.curr),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(t(memb.currents),main='Membrane currents',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(t(C.curr),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 
 
 @
@@ -529,11 +534,11 @@ if(0==1){
 #spline interpolaljuk a függvényt, és ugyanazokban a a pontokban számítsuk ki az eltérést...
 #egyenlore elteresek van az eredeti és számolt áramok nagyságrendjében, ezért 1-re normáltjukkal számoljunk
 #legyenek az interpolációs pontok ugyanazok, mint a source pontok???
-ido.nb<-length(time)
+ido.nb<-distribution.nb
 #Let's calculate the current densities first
 #let's devide each original current by the length of that segment
-memb.current.dens<-array(0,c(seg.db, ido.nb))
-for (i in 1: seg.db) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
+memb.current.dens<-array(0,c(seg.nb, ido.nb))
+for (i in 1: seg.nb) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
 #the current densities are only well seen at the soma
 #image(memb.current.dens)
 
@@ -546,8 +551,8 @@ for (i in 1: seg.db) memb.current.dens[i,]<-memb.currents[i,]/seg.length[i]
 limitsodcurr<-range(C.dens,memb.current.dens)
 
 par(mfrow=c(2,1))
-image.plot(time,seg.kord[,3],t(memb.current.dens),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-image.plot(time,where.cord[,3],t(C.dens),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(t(memb.current.dens),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(t(C.dens),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 }
 @
 
@@ -559,26 +564,27 @@ if(0==1){
 hany.pont<-40
 memb.currents.dens.interpol<-array(0,c(hany.pont, ido.nb))
 C.dens.interpol<-array(0,c(hany.pont, ido.nb))
-
+rmse.snap<-array(0,c(1,distribution.nb)) 
+measure1<-numeric()
+#normalizes rmse
+nrmse.snap<-array(0,c(1,distribution.nb))
+error.t<-array(0,c(1,distribution.nb)) #normalied error for evrey time
 interpol.limit<-c(seq(-50,550,length.out=hany.pont))
-for(i in 1:length(time)){
+for(i in 1:distribution.nb){
 memb.currents.dens.interpol[,i]<-interpol(seg.kord[,3],memb.current.dens[,i],interpol.limit)
 C.dens.interpol[,i]<-interpol(where.cord[,3],C.dens[,i],interpol.limit)
+rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C.curr[,i])^2))
+nrmse.snap[i]<-rmse.snap[i]/sqrt(mean((memb.currents[,i]^2)))
 }
 par(mfrow=c(2,1))
 limitsodcurr<-range(C.dens,memb.current.dens)
-image.plot(time,interpol.limit,t(memb.currents.dens.interpol),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
-image.plot(time,interpol.limit,t(C.dens.interpol),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(interpol.limit,t(memb.currents.dens.interpol),main='Membrane currents density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
+image.plot(interpol.limit,t(C.dens.interpol),main='Estimated MC density',xlab="time (ms)",ylab="y (um)",zlim=limitsodcurr)
 
 }
-rmse.snap<-array(0,c(1,length(time))) 
-measure1<-numeric()
-#normalizes rmse
-nrmse.snap<-array(0,c(1,length(time)))
-error.t<-array(0,c(1,length(time))) #normalied error for evrey time
 
-rmse.snap[i]<-sqrt(mean((memb.currents[,i]-C.curr[,i])^2))
-nrmse.snap[i]<-rmse.snap[i]/sqrt(mean((memb.currents[,i]^2)))
+
+
 #nrmse.snap[i]<-rmse.snap[i]/(max(memb.currents[,i])-min(memb.currents[,i]))
 #error.t[i]<-sum((memb.currents.dens.interpol[,i]-C.dens.interpol[,i])^2)#/sum(memb.currents.dens.interpol[,i]^2)
 
@@ -595,52 +601,52 @@ nrmse.total<-rmse.total/sqrt(mean((memb.currents^2)))
 @
 %bs_1D_130509_maradekkedd.Rnw
 <<writingtofiles,echo=FALSE>>=
-#name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.db, sep='')
+#name.output.ksCSD<-paste('out/ksCSD_',base,'_R',R, '_dist',d, '_el',el.nb,'_seg', seg.nb, sep='')
 #write.table(C,name.output.ksCSD,col.names=FALSE, row.names=FALSE)
 #snap RMSE
-name.output.tRMSE<-paste('out0521/tRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.tRMSE<-paste('out0521/tRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 #write.table(rmse.snap, name.output.tRMSE,col.names=FALSE, row.names=FALSE)
-name.output.ntRMSE<-paste('out0521/normtRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.ntRMSE<-paste('out0521/normtRMSE_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 #write.table(nrmse.snap, name.output.ntRMSE,col.names=FALSE, row.names=FALSE)
-name.output.RMSE.total<-paste('out0521/RMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.RMSE.total<-paste('out0521/RMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 #write.table(rmse.total, name.output.RMSE.total,col.names=FALSE, row.names=FALSE)
-name.output.nRMSE.total<-paste('out0521/normRMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.nRMSE.total<-paste('out0521/normRMSEtot_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 write.table(nrmse.total, name.output.nRMSE.total,col.names=FALSE, row.names=FALSE)
 
 
-name.output.measure1<-paste('out0521/meaure1_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure1<-paste('out0521/meaure1_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 write.table(measure1, name.output.measure1,col.names=FALSE, row.names=FALSE)
 
-name.output.measure.curr<-paste('out0521/measurecurr_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure.curr<-paste('out0521/measurecurr_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 write.table(measure.curr, name.output.measure.curr,col.names=FALSE, row.names=FALSE)
 
-name.output.measure.peak<-paste('out0521/measurepeak_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.output.measure.peak<-paste('out0521/measurepeak_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.nb,'_bnum',M, sep='')
 write.table(measure.peakness, name.output.measure.peak,col.names=FALSE, row.names=FALSE)
 
 @
 
 <<density,echo=FALSE,fig=TRUE>>
-curve(inter,-100,500)
-lines(seg.kord[,3],C[,min.indexes[2],col='RED')
-
-lines(where.cord[,3],C[,min.indexes[2]],col='RED')
 
 
-memb.currents.dens<-array(0,c(where.db,length(time)))
-for(t in 1:length(time)){
+
+memb.currents.dens<-array(0,c(where.db,distribution.nb))
+for(t in 1:distribution.nb){
 C.d<-memb.currents[,t]/seg.length
 densest<-numeric(length(where.db))
 for(i in 1:where.db){
-for (j in 1: seg.db){
+for (j in 1: seg.nb){
 if((where.cord[i,3]< (seg.kord[j,3]+seg.length[j])) & (where.cord[i,3]> (seg.kord[j,3]-seg.length[j]))) densest[i]<-C.d[j]
 }
 }
 memb.currents.dens[,t]<-densest
 
 } #t
+curve(inter,0,600)
 
+plot(where.cord[,3],C[,min.indexes[2]],col='RED')
 lines(seg.kord[,3],memb.currents[,min.indexes[2]]/seg.length,col='RED')
-abline(v=seg.kord[1:seg.db,3])
+#lines(where.cord[,3],memb.currents.dens[,min.indexes[2]]/seg.length,col='RED')
+abline(v=seg.kord[1:seg.nb,3])
 
 
 @

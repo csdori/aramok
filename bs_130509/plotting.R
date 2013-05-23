@@ -2,9 +2,9 @@ place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/out0521/'
 saving.location<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/out0521/comparison'
 
 #mit<-'measurecurr'
-mit<-'meaure1'
+#mit<-'meaure1'
 #mit<-'normRMSEtot'
-#mit<-'measurepeak'
+mit<-'measurepeak'
 parameters<-c('BF.type', 'BF.width','BF.number','SEG.number', 'EL.number', 'EL.shift', 'DIST.10','DIST.20','DIST.30','DIST.40', 'DIST.50','DIST.60')
 
 BF.type<-c('gauss','step', 'sinxpx','cos')
@@ -71,6 +71,23 @@ matplot((1:6)*10,measures[7:12,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xla
 dev.off()
 }
 
+
+##############################################
+############ PLotting x=R y=error for nb of BFs
+###################################################
+
+for(bf in 1: 6)){
+dist<-bf*10
+whereto<-paste(saving.location,'/x_dist_y_',mit,'_bfnb_',BF.number[bf],sep='')
+png(whereto)
+par(mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
+maintitle<-paste(mit,'in case of ',BF.number[bf] ,'basis functions' )
+matplot((1:6)*10,measures[6+bf,whichones],t='l',lty = 1:5, lwd = 1,col=1:6,, xlab='Cell to electrode distance', ylab='RMSE',main=maintitle)
+ legend('topright',  inset=c(-0.6,0),colnames[whichones],
+            lty = 1:5, lwd = 1,col=1:6)
+
+dev.off()
+}
 
 
 
