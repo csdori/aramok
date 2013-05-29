@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in 'cos' 'gauss'
+#for btype in 'step' 'gauss' 'gauss2' 'cos' 'sinxpx'
+for btype in   'gauss2' 
 do
 #for dist in `seq 10 10 60`
 for dist in `seq 30 10 30`
@@ -12,14 +12,14 @@ echo $dist
 	
 	echo $dist > celleldist.txt
 	#number of electrodes
-	elnum='16'
+	elnum='32'
 	echo $elnum > elnum.txt
 
 	#ipython bs_syn_many.py
 
 for bnum in `seq 40 20 80`
 do
-for bwidth in `seq 210 10 250`
+for bwidth in `seq 10 10 50`
 do
 
 	#This script should set the parameters

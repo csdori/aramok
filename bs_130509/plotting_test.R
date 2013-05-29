@@ -167,6 +167,9 @@ memb.currents.points[,17+w]<-memb.currents[[4]](memb.points)
 #Az eloszlások külön időpillanatokban alkotott pintazatoknak felelnek meg
 whereto<-paste(saving.location,"/currentdis_cos.png",sep="")
 png(whereto,width = 1200, height = 600)
+
+
+
 par(mar=c(5.1, 4.1, 4.1, 12.1), xpd=TRUE)
 matplot(memb.points,memb.currents.points[,type],t='l',xlab='x (um)',ylab='current density',main='Original current densities',
             lty = 1:4, lwd = 2,col=1:7)
@@ -190,24 +193,57 @@ dev.off()
 ###########
 
 
-BF.width<-seq(20,150,10)
+BF.width<-seq(20,100,10)
 BF.number<-seq(40,80,20)
 speciald<-array(0,c(3,length(BF.width)))
+speciald2<-array(0,c(3,length(BF.width)))
 
-pattern<-12
-whereto<-paste(saving.location,"/error_Rtest_gauss_patt7.png",sep="")
-#png(whereto)
+whereto<-paste(saving.location,"/error_Rtest_cos_patt1_el_both.png",sep="")
+png(whereto,width = 1200, height = 600)
+par(mfrow=c(5,4),mar=c(2, 2, 2, 2))
+w<-0
+for(pattern in 1:1) {
+#for(pattern in 13:22) {
+w<-w+1
+plot(memb.currents.points[,pattern],t='l' ,xlab='x',ylab='current density')
+if(w==1) {
+legend('topright', paste(c(BF.number)) ,
+            lty = 1, lwd = 2,col=1:7,title='el 32', bg='WHITE')
+legend('bottomleft', paste(c(BF.number)) ,
+            lty = 2, lwd = 2,col=1:7,title='el 16', bg='WHITE')
+}
 for(i in 1:length(BF.width)){
 for(j in 1:length(BF.number)){
 
-file.name<-paste(place,mit,'_','cos','_bwidth',BF.width[i],'_dist',30, '_el', 16, '_where', 600 ,'_bnum',BF.number[j],sep='')
+file.name<-paste(place,mit,'_','cos','_bwidth',BF.width[i],'_dist',30, '_el', 32, '_where', 600 ,'_bnum',BF.number[j],sep='')
 speciald[j,i ]<-as.numeric(read.table(file.name)[pattern,])
+
+
+###############Ha egy másik verziór is ki akarunk rajzolni
+file.name2<-paste(place,mit,'_','cos','_bwidth',BF.width[i],'_dist',30, '_el', 16, '_where', 600 ,'_bnum',BF.number[j],sep='')
+speciald2[j,i ]<-as.numeric(read.table(file.name2)[pattern,])
 }}
-matplot(BF.width,t(speciald),t="l",xlab="Width of basis function", ylab="Error", main="Estimation error vs R" ,lty = 1:4, 
+
+if(w==1) {
+matplot(BF.width,t(speciald),t="l",xlab="Width of basis function", ylab="Error", main="Estimation error vs R" ,lty = 1,  ylim=c(0,0.3),
 lwd = 2,col=1:7 )
-legend('topright', paste(c(BF.number)) ,
-            lty = 1:4, lwd = 2,col=1:7)
-#dev.off()
+matplot(BF.width,t(speciald2),t="l",xlab="Width of basis function", ylab="Error", main="Estimation error vs R" ,lty = 2,  ylim=c(0,0.3),
+lwd = 2,col=1:7,add=TRUE )
+
+
+
+}
+
+
+else  {matplot(BF.width,t(speciald),t="l" ,lty = 1,  ylim=c(0,0.3),
+lwd = 2,col=1:7 )
+
+matplot(BF.width,t(speciald2),t="l" ,lty = 2,  ylim=c(0,0.3),
+lwd = 2,col=1:7 ,add=TRUE)
+}
+
+} #distrib
+dev.off()
 
 
 #################################################################

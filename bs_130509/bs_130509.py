@@ -133,8 +133,8 @@ cell_parameters = {
     	'e_pas' : -65,              # reversal potential passive mechs
 	'nsegs_method' :  'fixed_length',
 #	'fixed_length': 20, # method for setting number of segments,
-	'max_nsegs_length':5, #igy kapunk 52 szegmenst
-#	'max_nsegs_length':20, #igy kapunk 27 szegmenst
+	#'max_nsegs_length':5, #igy kapunk 52 szegmenst
+	'max_nsegs_length':20, #igy kapunk 27 szegmenst
 #	'max_nsegs_length':30, #igy kapunk 18 szegmenst
 #	'nsegs_method' : 'lambda_f',
 #	'lambda_f' : 1000,           # segments are isopotential at this frequency
@@ -154,8 +154,8 @@ electrodeParameters = {
     'y' : y,
     'z' : z,
 #     'method' : 'som_as_point',  #treat soma segment as sphere source
-     'method' : 'pointsource'
-     #'method' : 'linesource'
+#     'method' : 'pointsource'
+     'method' : 'linesource'
 }
    
 

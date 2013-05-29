@@ -22,7 +22,7 @@
 #############################################x
 
 #source('/media/BA0ED4600ED416EB/agy/kCSD/progik/ballsctick/ballstick.R')
-#Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat//bs_1D_130506/bs_1D_130506.Rnw')
+#Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat//bs_130509/bs_1D_130509test2.Rnw')
 hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509'
 setwd('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509')
 library('R2Cuba')
@@ -67,10 +67,11 @@ d<-as.matrix(read.table('celleldist.txt'))
 
 cell.length<-600
 #coordinates of electrode
-el.nb<-16
+#el.nb<-16
+el.nb<-as.matrix(read.table('elnum.txt'))
 elec.kord<-array(0,c(el.nb,3))
 elec.kord[,1]<-d
-elec.kord[,3]<-seq(-50,650,length.out=16)
+elec.kord[,3]<-seq(-50,650,length.out=el.nb)
 elec.dist<-elec.kord[2,3]-elec.kord[1,3]
 
 sigma<-0.5
@@ -237,6 +238,7 @@ yl<-cord[2]
 zl<-cord[3]
 
 if (base=='gauss') {out<-exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R))}
+if (base=='gauss2') {out<-exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(R^2))}
 if (base=='step'){ 
 thresh1<-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
 if ( thresh1<= R^2)  out<-1 #itt eredetileg (R/2 volt)
@@ -272,6 +274,7 @@ yl<-a[2]+(b[2]-a[2])*t
 zl<-a[3]+(b[3]-a[3])*t
 
 if (base=='gauss'){ ff<- (exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(2*R)))/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)}
+if (base=='gauss2'){ ff<- (exp(-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)/(R^2)))/sqrt((r[1]-xl)^2+(r[2]-yl)^2+(r[3]-zl)^2)*sqrt((b[1]-a[1])^2+(b[2]-a[2])^2+(b[3]-a[3])^2)}
 
 if (base=='step'){
 thresh1<-((source.cord[i,1]-xl)^2+(source.cord[i,2]-yl)^2+(source.cord[i,3]-zl)^2)
@@ -300,7 +303,7 @@ return(ff)
 
 
 #integralt<-integrate(Vectorize(fun), -Inf,Inf,rel.tol=0.001)
-integralt<-integrate(Vectorize(fun), (source.cord[i,3]-a[3]-2*R)/(b[3]-a[3]),(source.cord[i,3]-a[3]+2*R)/(b[3]-a[3]))
+integralt<-integrate(Vectorize(fun), (source.cord[i,3]-a[3]-3*R)/(b[3]-a[3]),(source.cord[i,3]-a[3]+3*R)/(b[3]-a[3]))
 #integralt<-cuhre(1,1,fun,lower=as.vector((source.cord[i,3]-10*R)/(b[3]-a[3])),upper=as.vector( (source.cord[i,3]+10*R)/(b[3]-a[3])),flags=list(verbose=0))
 #integralt<-cuhre(1,1,Vectorize(fun),lower=as.vector((-0.5)),upper=as.vector(1 ),flags=list(verbose=0))
 
@@ -325,14 +328,24 @@ points(source.cord[,1],source.cord[,3],col='RED')
 if (base=='step'){
 rect(-30,source.cord[1:M,3]-R/2,-20,source.cord[1:M,3]+R/2,col=rainbow(1,start=0.3,alpha=0.3))
 }
-if (base=='gauss'){
+#if (base=='gauss'){
+#for(j in 1:M){
+#x<-matrix(-100:600,ncol=1)
+#gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(2*R))
+#y<-apply(x,1,gaus)
+#lines(-10*y-20,x)
+#}
+#}
+
+if (base=='gauss2'){
 for(j in 1:M){
 x<-matrix(-100:600,ncol=1)
-gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(2*R))
+gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(R^2))
 y<-apply(x,1,gaus)
 lines(-10*y-20,x)
 }
 }
+
 
 
 if (base=='cos'){
@@ -371,14 +384,19 @@ points(source.cord[,1],source.cord[,3],col=coloursline,pch=20,lwd=2)
 rect(-50+((1:M)%%7)*2,source.cord[1:M,3]-R/2,-35,source.cord[1:M,3]+R/2,border=coloursline[1:7],lwd=2)
 
 
+#for(j in 1:M){
+#x<-matrix(-100:600,ncol=1)
+#gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(R*2))
+#y<-apply(x,1,gaus)
+#lines(-10*y-20,x,col=coloursline[1+(j-1)%%7],lwd=2)
+#}
+
 for(j in 1:M){
 x<-matrix(-100:600,ncol=1)
-gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(R*2))
+gaus<-function(r.t) exp(-sum((source.cord[j,3]-r.t)^2)/(R^2))
 y<-apply(x,1,gaus)
 lines(-10*y-20,x,col=coloursline[1+(j-1)%%7],lwd=2)
 }
-
-
 
 
 for(j in 1:M){
