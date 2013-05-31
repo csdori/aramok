@@ -79,21 +79,21 @@ memb.currents<-memb.currents[sorrend,]
 
 ############## Source coordinates
 M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett források szama a sejten)
-delta<-cell.length/(M-1) #shift of overlapping sources on average
+delta<-cell.length/(M-7) #shift of overlapping sources on average
 #delta<-cell.length/(M) 
 source.cord<-array(0,c(M,3))
-for (i in 1:M) source.cord[i,3]<-min(seg.kord[,3])+(i-2)*delta
+for (i in 1:M) source.cord[i,3]<-min(seg.kord[,3])+(i-5)*delta
 #for (i in 1:M) source.cord[i,3]<-seg.kord[1,3]+(i-1)*delta
 #source.cord[,3]<-seg.kord[,3]
 
 
 #where do we want to ge the values of currents
-#where.db<-100
-#where.cord<-matrix(0,nrow=100,ncol=3)
-#where.cord[,3]<-seq(seg.end[1,3],seg.end[seg.db,3],length.out=100)
+where.db<-100
+where.cord<-matrix(0,nrow=100,ncol=3)
+where.cord[,3]<-seq(seg.end[1,3],seg.end[seg.db,3],length.out=100)
 
-where.db<-M
-where.cord<-source.cord
+#where.db<-M
+#where.cord<-source.cord
 
 
 
@@ -646,12 +646,22 @@ write.table(measure.peakness, name.output.measure.peak,col.names=FALSE, row.name
 #} #t
 
 #lines(seg.kord[,3],memb.currents[,min.indexes[2]]/seg.length,col='RED')
+
+
+
 funaramvonal<-function(x) x/seg.length
 memb.currents.vonal<-apply(memb.currents,2,funaramvonal) 
+memb.currents.vonal.smoothed<-array(0,c(seg.db, length(time)))
+for (t in 1: length(time)){
+memb.currents.vonal.smoothed[,t]<-ksmooth(seg.kord[,3],memb.currents.vonal[,t], "normal", bandwidth=60,x.points=seg.kord[,3])$y
+}
+
+
 
 plot(where.cord[,3],C[,min.indexes[2]],col='RED',t='l')
-lines(seg.kord[,3],memb.currents.vonal[,min.indexes[2]],col='RED')
-abline(v=seg.kord[1:seg.db,3])
+points(seg.kord[,3],memb.currents.vonal[,min.indexes[2]])
+lines(seg.kord[,3],memb.currents.vonal.smoothed[,min.indexes[2]])
+#abline(v=seg.kord[1:seg.db,3])
 
 
 

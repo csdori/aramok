@@ -4,7 +4,7 @@
 #sh ./bs_130509for_line.sh
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in  'gauss' 'cos' 
+for btype in   'gauss' 
 do
 
 for dist in `seq 30 10 30`
@@ -14,7 +14,7 @@ echo $dist
 	
 	echo $dist > celleldist.txt
 	#number of electrodes
-	elnum='16'
+	elnum='32'
 	echo $elnum > elnum.txt
 
 	#Run the LFPy code for ballstick model
@@ -22,9 +22,9 @@ echo $dist
 	#ipython bs_syn.py
 	#ipython bs_syn_many.py
 
-for bnum in `seq 40 20 80`
+for bnum in `seq 100 20 120`
 do
-for bwidth in `seq 50 10 80`
+for bwidth in `seq 25 10 55`
 do
 
 	#This script should set the parameters

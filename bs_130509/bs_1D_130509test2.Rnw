@@ -518,6 +518,10 @@ name.output.error1<-paste('out_test/error1_',base,'_bwidth',R, '_dist',d, '_el',
 write.table(error1, name.output.error1,col.names=FALSE, row.names=FALSE)
 
 
+#name.output.C<-paste('out_test/C_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_where',where.db ,'_bnum',M, sep='')
+#write.table(C, name.output.C,col.names=FALSE, row.names=FALSE)
+
+
 @
 
 

@@ -16,10 +16,10 @@ echo $dist
 	echo $elnum > elnum.txt
 
 	#ipython bs_syn_many.py
-
 for bnum in `seq 40 20 80`
+
 do
-for bwidth in `seq 10 10 50`
+for bwidth in `seq 55 10 55`
 do
 
 	#This script should set the parameters
