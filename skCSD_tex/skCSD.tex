@@ -7,6 +7,8 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[margin=0.5in]{geometry}
+
 \author{Dorottya Cserpan}
 
 \title{Single Cell Kernel Current Source Density}
@@ -118,6 +120,51 @@ Using the simulated or measured extracellular potentials ($V$) and assuming $\ti
 
 
 
+\subsection{ One dimensional solution }
+As linear current distributions are used for the reconstruction, the method can be reduced to 1 dimension. For we assume that the cell can be reconstructed from lines.
+The lines in the 3D space can be parametrized with 1 variable. Let's say we have two 
+points $A (x_a,y_a,z_a), B (x_b,y_b,z_b)$ in the space and we want to get the equation of the line which goes through these. 
+
+%\begin{equation}
+\begin{subequation}
+\begin{align}
+x &= x_a + (x_b - x_a) t \\
+y &= y_a+(y_b-y_a)t \\
+z &= z_a+(z_b-z_a)t \\
+\end{align}
+\end{subequation}
+
+%\end{equation}
+
+Writing the equations in this formalism:
+\begin{equation}
+\tilde{b}_i (x,y,z) = e^{- \frac{(x-x_i)^2+(y-y_i)^2+(z-z_i)^2}{R^2}}
+\end{equation}
+
+\begin{equation}
+\tilde{b}_i (t) = e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}
+\end{equation}
+
+
+
+\begin{equation}
+b_i (x,y,z)= A \tilde{b}_i (x,y,z)= \frac{1}{4 \pi \sigma} \iiint 
+\frac{ \tilde{b}_i (x',y',z')}{\sqrt{(x-x')^2+(y-y')^2+(z-z')^2}} dx' dy' dz'
+\end{equation}
+
+
+
+\begin{equation}
+\begin{align*}
+
+
+b_i (x,y,z) &= 
+\frac{1}{4 \pi \sigma} \int 
+\frac{ e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}}{\sqrt{(x-x_a + (x_b - x_a) t)^2+(y- y_a+(y_b-y_a)t )^2+(z-z_a+(z_b-z_a)t)^2}} \\
+&\sqrt{(x_b-x_a)^2 +(y_b-y_a)^2+(z_b-z_a)^2} dt
+\end{align*}
+\end{equation}
+
 \subsection{Simulations}
 
 Different distribution used
@@ -202,7 +249,7 @@ The parameters for this simulations were set in a way that it is similar to the 
 %\centering
 \includegraphics[width=15cm]{plots/error_Rtest_gauss2_patt13_22_el_both.png}
 \caption{Type of basis function: gauss, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_cos2}
+\label{fig:error_gauss2}
 \end{figure}
 
 Conclusion
