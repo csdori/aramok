@@ -124,7 +124,10 @@ def plotstuff(cell, electrode):
 ###############
 cell_parameters = {         
    #     'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
-	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.hoc',     # Mainen&Sejnowski, Nature, 1996
+#	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.hoc',     # Mainen&Sejnowski, Nature, 1996
+#	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG.swc' ,    
+	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc' ,    
+
 	'Ra': 123,
         'tstartms' : 0.,                 # start time of simulation, recorders start at t=0
         'tstopms' : 70.,                   # stop simulation at 200 ms. 
@@ -143,7 +146,7 @@ cell_parameters = {
 
 #Generate the grid in xz-plane over which we calculate local field potentials
 x = pl.linspace(d, d, elecnumb)
-z = pl.linspace(-150, 550, elecnumb)
+z = pl.linspace(-150, 400, elecnumb)
 
 y = pl.linspace(0, 0, x.size)
 

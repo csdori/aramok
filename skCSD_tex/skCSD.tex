@@ -1,7 +1,7 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{ucs}
-\usepackage[magyar]{babel}
+
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -126,13 +126,13 @@ The lines in the 3D space can be parametrized with 1 variable. Let's say we have
 points $A (x_a,y_a,z_a), B (x_b,y_b,z_b)$ in the space and we want to get the equation of the line which goes through these. 
 
 %\begin{equation}
-\begin{subequation}
+%\begin{subequation}
 \begin{align}
 x &= x_a + (x_b - x_a) t \\
 y &= y_a+(y_b-y_a)t \\
 z &= z_a+(z_b-z_a)t \\
 \end{align}
-\end{subequation}
+%\end{subequation}
 
 %\end{equation}
 
@@ -154,16 +154,14 @@ b_i (x,y,z)= A \tilde{b}_i (x,y,z)= \frac{1}{4 \pi \sigma} \iiint
 
 
 
-\begin{equation}
-\begin{align*}
-
-
+%\begin{equation}
+\begin{align}
 b_i (x,y,z) &= 
 \frac{1}{4 \pi \sigma} \int 
 \frac{ e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}}{\sqrt{(x-x_a + (x_b - x_a) t)^2+(y- y_a+(y_b-y_a)t )^2+(z-z_a+(z_b-z_a)t)^2}} \\
 &\sqrt{(x_b-x_a)^2 +(y_b-y_a)^2+(z_b-z_a)^2} dt
-\end{align*}
-\end{equation}
+\end{align}
+%\end{equation}
 
 \subsection{Simulations}
 
@@ -262,10 +260,26 @@ Generally increasing the number of the used basis functions improves the accurac
 
 
 \textbf{Stimulation of the soma}
-The simulation of extracellular potential of a ballstick neuron model was done by using LFPy \cite{LFPy}, which is a tool designed to calculate the extracellular potential of model neurons. An excitatory current lasting 100 ms injected into the soma-ball assured the continuous action potential generation.  The 1 dimensional neuron model was aligned parallel to the electrode, similar to the test simulations. The diamater of the soma is 18.8 um. 
+The simulation of extracellular potential of a ballstick neuron model was done by using LFPy \cite{LFPy}, which is a tool designed to calculate the extracellular potential of model neurons. An excitatory current lasting 100 ms injected into the soma-ball assured the continuous action potential generation.  The 1 dimensional neuron model was aligned parallel to the electrode, similar to the test simulations. The diameter of the soma is 18.8 um. 
 
 
 
+\subsection{Cells with more complex morphology}
+The main advantage of this method compared to the sCSD methods is the possibility to calculate the current distributions on branches as well. The distribution of the basis function on the branching morphology is though a challenge.
+
+Basic assumptions:
+\begin{itemize}
+\item the branches between their endpoints are estimated by a line
+\item at the branching points all the current densities are averaged out the solve the barrier conditions
+\item the sources are evenly distributed
+\item the branches are handles separately, they are independent from each other, an other solution would be to crate overlapping source 
+\end{itemize}
+
+Ideas:
+\begin{itemize}
+\item Should we rather use volume sources instead? It will be impossible to trace al the branches...
+\item What spatial distribution is necessary? 
+\end{itemize}
 
 %\subsection{Parameters} 
 %In the calculation shown here the following parameters were used (Fig. 1.):

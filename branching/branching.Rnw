@@ -46,11 +46,13 @@ branch.end<-array(0,c(branch.nb,3))
 branch.beg[1,3]<--9.4
 branch.end[1,3]<-+9.4
 branch.beg[2,3]<-+9.4
-branch.end[2,3]<-390.5
-branch.beg[3,3]<-+9.4
-branch.end[3,3]<-+341.3
-branch.beg[3,1]<-2.94
-branch.end[3,1]<-50
+branch.end[2,3]<-390.6
+#branch.beg[3,3]<-+9.4
+#branch.end[3,3]<-+341.3
+#branch.beg[3,1]<-2.94
+#branch.end[3,1]<-50
+branch.beg[3,3]<-390.6
+branch.end[3,3]<-440.5
 branch.beg[4,3]<--9.4
 branch.end[4,3]<--159.4
 #how long is the cell?
@@ -106,11 +108,16 @@ M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett fo
 #delta<-cell.length/(M) #shift of overlapping sources on average
 #would be nice to seperate the basis functions according to the branches they belong to
 #the basis functions should be distirbuted evenly along the branches, let's valculate how many basis functions belongs the the different branches
+#########################################
+################# Parent-children
+#####################################x
+#all the basis of one segment functions should go through the paren and its child #is this going to result a huge number of basis functions?
+
 delta<-cell.length/(M) 
 source.branch.db<-round(branch.length/cell.length*M)
 source.cord<-numeric()
 for(i in 1:branch.nb){
-t<-array(seq(0.05,0.95,length.out=source.branch.db[i]),c(1,source.branch.db[i]))
+t<-array(seq(-0.05,1.05,length.out=source.branch.db[i]),c(1,source.branch.db[i]))
 source.cord<-c(source.cord,array(branch.beg[i,],c(3,source.branch.db[i]))+(branch.end[i,]-branch.beg[i,])%*%t)
 }
 source.cord<-matrix(source.cord,ncol=3,byrow=TRUE)
@@ -126,28 +133,17 @@ source.branch[,2]<-c(rep(1:branch.nb,as.matrix(source.branch.db)))
 #where do we want to ge the values of currents
 
 where.cord<-numeric()
-#for(i in 1:branch.nb){
-#t<-array(seq(0.05,0.95,length.out=source.branch.db[i]),c(1,source.branch.db[i]))
-#where.cord<-c(where.cord,array(branch.beg[i,],c(3,source.branch.db[i]))+(branch.end[i,]-branch.beg[i,])%*%t)
-#}
-#where.cord<-matrix(where.cord,ncol=3,byrow=TRUE)
+for(i in 1:branch.nb){
+t<-array(seq(0.0,1,length.out=source.branch.db[i]),c(1,source.branch.db[i]))
+where.cord<-c(where.cord,array(branch.beg[i,],c(3,source.branch.db[i]))+(branch.end[i,]-branch.beg[i,])%*%t)
+}
+where.cord<-matrix(where.cord,ncol=3,byrow=TRUE)
 #to which branch do the different points of calculation belong to?
 where.db<-M
-where.cord<-source.cord
+#where.cord<-source.cord
 where.branch<-source.branch
 
 
-
-#transfer matrix for sCSD
-#xi<-elec.kord
-#xj<-seq(0,500,length.out=el.nb)
-#T<-array(0,c(el.nb,el.nb))
-#for(i in 1:el.nb){
-#for(j in 1:el.nb){
-#T[i,j]<-1/sqrt(sum((xi[i,3]-xj[j])^2+d^2))
-#}#j
-#}#i
-#LFP.calc<-1/(4*pi*sigma)*T%*%memb.currents
 
 
 #lfp
@@ -210,7 +206,7 @@ const<-1/(4*pi*sigma)
 
 
 #The calculations should just be done in the same branches...
-
+#b.tilda.i(i,R,source.cord,where.cord[j,])
 b.tilda.i<-function(i,R,source.cord,cord)
 {
 out<-numeric()
@@ -283,7 +279,9 @@ return(ff)
 
 
 #integralt<-integrate(Vectorize(fun), -Inf,Inf,rel.tol=0.001)
-integralt<-integrate(Vectorize(fun), (source.cord[i,3]-a[3]-3*R)/(b[3]-a[3]),(source.cord[i,3]-a[3]+3*R)/(b[3]-a[3]))
+#it is possible,that the
+integralt<-integrate(Vectorize(fun), -0.4,1.4)
+#integralt<-integrate(Vectorize(fun), (source.cord[i,3]-a[3]-3*R)/(b[3]-a[3]),(source.cord[i,3]-a[3]+3*R)/(b[3]-a[3]))
 #integralt<-cuhre(1,1,fun,lower=as.vector((source.cord[i,3]-10*R)/(b[3]-a[3])),upper=as.vector( (source.cord[i,3]+10*R)/(b[3]-a[3])),flags=list(verbose=0))
 #integralt<-cuhre(1,1,Vectorize(fun),lower=as.vector((-0.5)),upper=as.vector(1 ),flags=list(verbose=0))
 
@@ -492,7 +490,7 @@ return(out)}
 #for (i in 1: where.db) C.curr.many[i,]<-C[i,]*(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
 #A density fgv-t kiintegralva kapjuk meg az aramot!!
 C.curr<-array(0,dim(memb.currents))
-piece.length<-(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
+#piece.length<-(where.cord[where.db,3]-where.cord[1,3])/(where.db-1)
 for(t in 1:length(time)){
 inter<-splinefun(where.cord[,3],C[,t],method="monoH.FC")
 for(db2 in 1:seg.db ) {output<-integrate(inter,seg.kord[db2,3]-seg.length[db2]/2,seg.kord[db2,3]+seg.length[db2]/2)
@@ -523,13 +521,24 @@ measure.peakness<--(min(C.curr)-mean(C.curr[-min.indexes[1],min.indexes[2]]))/sq
 ###########################################
 ############x coloured morphology
 ###########################################
-par(mfrow=c(1,1),bg='BLACK')
+
+par(mfrow=c(2,1),bg='BLACK')
+image(t(memb.currents), col=rainbow(150))
+image(t(C), col=rainbow(150))
+
+where.cord[which()]
+
+par(mfrow=c(1,2),bg='BLACK')
+
 min.indexes<-which(C==min(C),arr.ind=TRUE)[2]
-szinskala<-color.scale(c(C[,min.indexes]),col=tim.colors(256))
+szinskala<-color.scale(c(C[,min.indexes]),col=rainbow(150))
 plot(where.cord[,1],where.cord[,3],pch=16,col=szinskala,asp=1)
 
-szinskala2<-color.scale(c(memb.currents[,min.indexes]),col=tim.colors(256))
-plot(seg.cord[,1],seg.cord[,3],pch=16,col=szinskala2)
+szinskala2<-color.scale(c(memb.currents[,min.indexes]),col=rainbow(150))
+plot(seg.cord[,1],seg.cord[,3],pch=16,col=szinskala2,asp=1)
+
+plot(seg.kord[,3],memb.currents.vonal[,min.indexes])
+points(where.cord[,3],C[,min.indexes],col='RED')
 
 @
 
@@ -734,6 +743,11 @@ lines(seg.kord[,3],memb.currents.vonal.smoothed[,min.indexes])
 
 @
 
+<<cellplot,echo=FALSE,fig=TRUE>>=
+library(scatterplot3d)
+cellplot<-scatterplot3d(seg.cord[,1],seg.cord[,2],seg.cord[,3],xlim=c(-10,50))
+cellplot$points3d(elec.kord[,1],elec.kord[,2],elec.kord[,3])
+@
 
 
 \end{document}
