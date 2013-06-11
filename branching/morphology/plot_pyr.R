@@ -1,7 +1,7 @@
-
-library(scatterplot3d)
-
-
+library('scatterplot3d')
+library('foreach')
+library('doMC')
+library('fields')
 #I took a random cell morphology from neuromorpho
 #http://neuromorpho.org/neuroMorpho/neuron_info.jsp?neuron_name=03a_pyramidal9aFI
 #This program:
@@ -23,7 +23,6 @@ alak<-as.matrix(read.table('branching.swc'))
 #z coordinate of the compartment
 #radius of the compartment
 #parent compartment
-
 
 comp.nb<-dim(alak)[1] #number of compartments
 soma<-length(alak[which(alak[,2]==1)]) #how many points represent the soma
@@ -62,8 +61,8 @@ sc$points3d(alak[branching.points,3],alak[branching.points,4],alak[branching.poi
 
 #2D plot
 colours<-color.scale(branches,col=rainbow(branch.nb))
-plot(alak[,3],alak[,4],col=colours,pch=20,cex=1.5,xlab='x',ylab='y',main='Cell morphology')
-points(alak[branching.points,3],alak[branching.points,4],col='BLACK',pch=20,cex=1.5)
+plot(alak[,3],alak[,5],col=colours,pch=20,cex=1.5,xlab='x',ylab='y',main='Cell morphology')
+points(alak[branching.points,3],alak[branching.points,5],col='BLACK',pch=20,cex=1.5)
 ########################################################
 
  
@@ -175,25 +174,36 @@ M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett
 #########################################
 M<-as.numeric(read.table('basenum.txt'))
 source.branch.db<-round(branch.length/cell.length*M)
+branch.source<-rep(1:branch.nb,source.branch.db)
+where.branch.db<-source.branch.db
 # real number of the basis functions
 M<-sum(source.branch.db)
 source.cord<-array(0,c(M,3))
 b.cordx<-numeric()
 b.cordy<-numeric()
 b.cordz<-numeric()
+source.cord.t<-numeric()
+where.cord.t<-numeric()
+where.which<-numeric()#which "where" is on which branch
 for (j in 1:branch.nb){
+#t<-seq(0,max(comp.place[[j]]),length.out=source.branch.db[j])
 t<-seq(0,max(comp.place[[j]]),length.out=source.branch.db[j])
+
+where.t<-seq(0,max(comp.place[[j]]),length.out=where.branch.db[j])
 b.cordx<-c(b.cordx,vonalfun[[j]]$V3(t))
 b.cordy<-c(b.cordy,vonalfun[[j]]$V4(t))
 b.cordz<-c(b.cordz,vonalfun[[j]]$V5(t))
+source.cord.t<-c(source.cord.t,t)
+where.cord.t<-c(where.cord.t,where.t)
+where.which<-c(where.which,rep(j,where.branch.db[j]))
 }
 source.cord[,1]<-b.cordx
 source.cord[,2]<-b.cordy
 source.cord[,3]<-b.cordz
 remove(t,j,b.cordx,b.cordy,b.cordz)
 ###############################################
-where.cord<-seg.cord
-where.db<-seg.db
+
+where.db<-length(where.which)
 
 
 #########################################
@@ -221,7 +231,7 @@ cat(paste('Number of segments:',seg.db))
 cat(paste('Type of base functions:',base))
 cat(paste('Width of base functions:',R, 'um'))
 cat(paste('sigma:',sigma))
-cat(paste('Shift of overlapping of base functions:', delta, 'um'))
+#cat(paste('Shift of overlapping of base functions:', delta, 'um'))
 cat(paste('Cell to electrode distance:',d))
 
 @
@@ -250,7 +260,7 @@ cat('Dimension 	  [μm]')
 const<-1/(4*pi*sigma) 
 
 ####################### kCSD
-source('alprogik/basisfun.R')
+source('alprogik/basisfun_branching.R')
 
 @
 
@@ -270,10 +280,9 @@ setwd(hovament)
 ########################################
 
 
-library(foreach)
-library(doMC)
-#registerDoMC(cores=4)
-registerDoMC(cores=16)
+
+registerDoMC(cores=4)
+#registerDoMC(cores=16)
 
 ################# 
 #Számoljuk ki a B illetve B.tilda mátrixot
@@ -284,25 +293,20 @@ source.nb<-M
 
 #branch #melyik branchen vagyunk????
 
-
 B.tilda<-array(0,c(source.nb,where.db))
 B<-array(0,c(source.nb,el.nb))
 for(i in 1:source.nb){
-whichbranch<-source.branch[i,2]
-a<-branch.beg[whichbranch,]
-b<-branch.end[whichbranch,]
 
-#cat(i)
 Bj.result<-numeric(el.nb)
 Bj.result<-foreach(j=1:el.nb,.combine=c) %dopar% {
-b.i(i,R,source.cord,elec.kord[j,])
+b.i(i,R,source.cord.t,elec.kord[j,])
 }
 B[i,]<-Bj.result
-
+j<-0
 B.t.j.result<-numeric(where.db)
 B.t.j.result<-foreach(j=1:where.db,.combine=c) %dopar% {
 #b.tilda.i(i,R, source.cord,source.cord[j,]) #ide a t-nek a megfelelő értékét kéne beírni a source coord helyén
-b.tilda.i(i,R, source.cord,where.cord[j,]) #if (b[3]-a[3])!=0 !!
+b.tilda.i(i,R, source.cord.t,where.cord.t,j) #if (b[3]-a[3])!=0 !!
 
 }
 B.tilda[i,]<-B.t.j.result
@@ -320,6 +324,9 @@ K.tilda<-t(B)%*%B.tilda
 
 C<-1/const*t(K.tilda)%*%solve(K)%*%LFP#*1000000#hogy nV-ban legyen az LFP ,
 #C<-C/10^6 #a sigmaban cm^2-et használnak
+
+ image(C,col=rainbow(100))
+ matplot(t(C),t='l')
 
 
 
