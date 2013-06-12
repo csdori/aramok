@@ -4,7 +4,7 @@
 #sh ./branching.sh
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'gauss' 
+for btype in   'cos' 
 do
 
 for dist in `seq 30 10 30`
@@ -17,6 +17,14 @@ echo $dist
 	elnum='32'
 	echo $elnum > elnum.txt
 
+#Morphology
+	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc'
+	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc'
+	echo $morpho > morphology.txt
+	#cell to electrode distance DISTANCE=10	
+
+
+
 	#Run the LFPy code for ballstick model
 	ipython branching.py  
 	#ipython bs_syn.py
@@ -24,11 +32,12 @@ echo $dist
 
 for bnum in `seq 80 20 80`
 do
-for bwidth in `seq 25 10 35`
+for bwidth in `seq 50 10 50`
 do
 
 	#This script should set the parameters
-	#cell to electrode distance DISTANCE=10	
+		
+	
 	
 	# set width of base function
 	#bwidth='40'
@@ -41,9 +50,9 @@ do
 	echo $bnum > basenum.txt
 
 	#Run the R Sweave code for ballstick model
-	#R CMD Sweave branching.Rnw
+	R CMD Sweave ksCSD_branching.Rnw
 	#Compile the latex file
-	#pdflatex branching.tex 
+	pdflatex ksCSD_branching.tex 
 
 	#el.nb=10
 	#seg.db=18

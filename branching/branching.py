@@ -20,7 +20,13 @@ f2 = open('elnum.txt', 'r')
 elnb = [line.strip() for line in f2]
 elecnumb = int(elnb[0])
 f2.close()
-###################x
+#morphology
+f3 = open('morphology.txt', 'r')
+morph = [line.strip() for line in f3]
+morpho = morph[0]
+f3.close()
+
+###################
 #Plotting
 
 #set some plotting parameters
@@ -125,9 +131,9 @@ def plotstuff(cell, electrode):
 cell_parameters = {         
    #     'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/bs_130509/ballstick.hoc',     # Mainen&Sejnowski, Nature, 1996
 #	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.hoc',     # Mainen&Sejnowski, Nature, 1996
-#	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG.swc' ,    
-	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc' ,    
-
+#	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc' ,    
+	'morphology' : morpho ,    
+#	'morphology' : '/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc',
 	'Ra': 123,
         'tstartms' : 0.,                 # start time of simulation, recorders start at t=0
         'tstopms' : 70.,                   # stop simulation at 200 ms. 
@@ -191,6 +197,11 @@ simulationParameters = {
 
 #Initialize cell instance, using the LFPy.Cell class
 cell = LFPy.Cell(**cell_parameters)
+
+#rotation
+#rotation = {'x' : 1.233, 'y' : 0.236, 'z' : np.pi}
+#cell.set_rotation(**rotation)
+
 #set the position of midpoint in soma to Origo (not needed, this is the default)
 cell.set_pos(xpos = 0, ypos = 0, zpos = 0)
 
@@ -250,6 +261,7 @@ elprop=np.hstack(
 np.savetxt(outname + 'elprop',elprop)
 # Plotting of simulation results:
 plotstuff(cell, electrode)
-pl.show()
+#pl.show()
+pl.savefig('lfpy_setup.pdf')
 
 
