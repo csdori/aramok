@@ -4,7 +4,7 @@
 #sh ./branching.sh
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'cos' 
+for btype in   'gauss' 
 do
 
 for dist in `seq 30 10 30`
@@ -14,12 +14,13 @@ echo $dist
 	
 	echo $dist > celleldist.txt
 	#number of electrodes
-	elnum='32'
+	elnum='16'
 	echo $elnum > elnum.txt
 
 #Morphology
 	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc'
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc'
+	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/morpho1.swc'
 	echo $morpho > morphology.txt
 	#cell to electrode distance DISTANCE=10	
 
@@ -32,7 +33,7 @@ echo $dist
 
 for bnum in `seq 80 20 80`
 do
-for bwidth in `seq 50 10 50`
+for bwidth in `seq 15 10 55`
 do
 
 	#This script should set the parameters
@@ -57,7 +58,7 @@ do
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	#cp bs_1D_130509line.pdf out_branch/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
+	cp ksCSD_branching.pdf out_branch/'line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done

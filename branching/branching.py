@@ -49,7 +49,7 @@ def plotstuff(cell, electrode):
             diams = pl.array([cell.diam[i]])    
         else:
             if cell.zmid[i] < 600 and cell.zmid[i] > -200 and \
-                    cell.xmid[i] < 100 and cell.xmid[i] > -100:
+                    cell.xmid[i] < 100 and cell.xmid[i] > -400:
                 xcoords = pl.r_[xcoords, pl.linspace(cell.xstart[i],
                                             cell.xend[i], cell.length[i]*3)]   
                 ycoords = pl.r_[ycoords, pl.linspace(cell.ystart[i],
@@ -151,17 +151,21 @@ cell_parameters = {
 }
 
 #Generate the grid in xz-plane over which we calculate local field potentials
-x = pl.linspace(d, d, elecnumb)
-z = pl.linspace(-150, 400, elecnumb)
+#x = pl.linspace(d, d, elecnumb)
+y = pl.linspace(-400, 100, elecnumb)
+#z = pl.linspace(-150, 400, elecnumb)
+z = pl.linspace(-10, 10, 2)
+Y, Z = pl.meshgrid(y, z)
+x = pl.linspace(d, d, elecnumb*2)
 
-y = pl.linspace(0, 0, x.size)
+#	y = pl.zeros(X.size)
 
 #define parameters for extracellular recording electrode, using optional method
 electrodeParameters = {
     'sigma' : 0.5,              # extracellular conductivity
     'x' : x,        # x,y,z-coordinates of contact points
-    'y' : y,
-    'z' : z,
+    'y' : Y.reshape(-1),
+    'z' : Z.reshape(-1),
 #     'method' : 'som_as_point',  #treat soma segment as sphere source
 #     'method' : 'pointsource'
      'method' : 'linesource'

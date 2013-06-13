@@ -78,12 +78,14 @@ $\tilde{b}$ is the source function correlated to the segments of the neuron,$a_j
 The generated potential by the $\tilde{b_i}$ is denoted as  $b_i$, and the connection is made by the $A$ linear operator.
 
 \begin{equation}
+\label{eq:bfun}
 b_i (x,y,z)= A \tilde{b}_i (x,y,z)= \frac{1}{4 \pi \sigma} \iiint 
 \frac{ \tilde{b}_i (x',y',z')}{\sqrt{(x-x')^2+(y-y')^2+(z-z')^2}} dx' dy' dz'
 \end{equation}
 
 There is an infinite number of basis function we could use, one of the most common one is the Gaussian source function:
 \begin{equation}
+\label{eq:basisfun}
 \tilde{b}_i (x,y,z) = e^{- \frac{(x-x_i)^2+(y-y_i)^2+(z-z_i)^2}{R^2}}
 \end{equation}
 Here $R$ is the double of the variance of the Gaussian function. The connection between the current sources densities and potentials is introduced by the $A$ operator($A: \tilde{F}\rightarrow F$)
@@ -122,49 +124,51 @@ Using the simulated or measured extracellular potentials ($V$) and assuming $\ti
 
 \subsection{ Linear source solution }
 %As linear current distributions are used for the reconstruction, the method can be reduced to 1 dimension. For we assume that the cell can be reconstructed from lines.
-While reconstructing the shape of the neuron first we needed to identify the branching points and the branches. After that given on the morphology information each branch were estimated by a spline. The current dsitributions were estimated along these splines. 
+While reconstructing the shape of the neuron first we needed to identify the branching points and the branches. After that given on the morphology information each branch were estimated by a spline. The basis functions were distributed along these curves uniformly. The current source density distributions were estimated along these splines as well. 
+
+
+
 \begin{itemize}
 \item 
 \end{itemize}
-The lines in the 3D space can be parametrized with 1 variable. Let's say we have two 
-points $A (x_a,y_a,z_a), B (x_b,y_b,z_b)$ in the space and we want to get the equation of the line which goes through these. 
+The curves in the 3D space can be parametrized with variable $t$. 
+%Let's say we have two points $A (x_a,y_a,z_a), B (x_b,y_b,z_b)$ in the space and we want to get the equation of the line which goes through these. 
+
 
 %\begin{equation}
-%\begin{subequation}
-\begin{align}
-x &= x_a + (x_b - x_a) t \\
-y &= y_a+(y_b-y_a)t \\
-z &= z_a+(z_b-z_a)t \\
-\end{align}
-%\end{subequation}
-
+\begin{eqnarray}
+\displaystyle x &=& f_x(t)  \nonumber \\
+\displaystyle y &=& f_y(t)  \\
+\displaystyle z &=& f_z(t)  \nonumber 
+\end{eqnarray}
 %\end{equation}
 
-Writing the equations in this formalism:
+
+Writing the \ref{eq:basisfun}. equations in this formalism:
 \begin{equation}
-\tilde{b}_i (x,y,z) = e^{- \frac{(x-x_i)^2+(y-y_i)^2+(z-z_i)^2}{R^2}}
+\tilde{b}_i (t') = e^{- \frac{(t' - t_i)^2}{R^2}}
 \end{equation}
+where both $t,t_i \in \left[ 0, d \right] $ are parameters on the same branch which has a length of $d$. 
+%\begin{equation}
+%\tilde{b}_i (t) = e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}
+%\end{equation}
+Writing the \ref{eq:bfun}. equations in this formalism:
+
 
 \begin{equation}
-\tilde{b}_i (t) = e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}
-\end{equation}
-
-
-
-\begin{equation}
-b_i (x,y,z)= A \tilde{b}_i (x,y,z)= \frac{1}{4 \pi \sigma} \iiint 
-\frac{ \tilde{b}_i (x',y',z')}{\sqrt{(x-x')^2+(y-y')^2+(z-z')^2}} dx' dy' dz'
+b_i (x,y,z)= A \tilde{b}_i (t')= \frac{1}{4 \pi \sigma} \int 
+\frac{ \tilde{b}_i (t')}{\sqrt{(x-x'(t))^2+(y-y'(t))^2+(z-z'(t))^2}} dt'
 \end{equation}
 
 
 
 %\begin{equation}
-\begin{align}
-b_i (x,y,z) &= 
-\frac{1}{4 \pi \sigma} \int 
-\frac{ e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}}{\sqrt{(x-x_a + (x_b - x_a) t)^2+(y- y_a+(y_b-y_a)t )^2+(z-z_a+(z_b-z_a)t)^2}} \\
-&\sqrt{(x_b-x_a)^2 +(y_b-y_a)^2+(z_b-z_a)^2} dt
-\end{align}
+%\begin{align}
+%b_i (x,y,z) &= 
+%\frac{1}{4 \pi \sigma} \int 
+%\frac{ e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}}{\sqrt{(x-x_a + (x_b - x_a) t)^2+(y- y_a+(y_b-y_a)t )^2+(z-z_a+(z_b-z_a)t)^2}} \\
+%&\sqrt{(x_b-x_a)^2 +(y_b-y_a)^2+(z_b-z_a)^2} dt
+%\end{align}
 %\end{equation}
 
 \subsection{Simulations}
@@ -178,8 +182,8 @@ Different distribution used
 
 
 
-\subsubsection{Test distributions}
-For developing the basic properties of the method and finding the best parameters for a specific setup we used some simple distributions \ref{fig:distribution} to estimate.
+\subsubsection{Test distributions on a line}
+For developing the basic properties of the method and finding the best parameters for a specific setup we used some simple distributions \ref{fig:distribution} to make estimations.
 
 \begin{figure}[h]
 \centering
@@ -191,7 +195,7 @@ For developing the basic properties of the method and finding the best parameter
 
 
 
-The shematic figure of the simulational setup is show on \ref{fig: test_setup}
+The shematic figure of the simulational setup is show on \ref{fig: test_setup}.
 
 
 \begin{figure}[h]
@@ -200,10 +204,7 @@ The shematic figure of the simulational setup is show on \ref{fig: test_setup}
 \caption{The setup for the test simulation}
 \label{fig: test_setup}
 \end{figure}
-In the simulations all the current density distributions were aligned on a line, which is parallel to the electrode shank. The resolution of the method is mainly depending on the number of electrodes used for the recording, here to cases of using 16 and 32 electrodes are shown. Also the number of basis functions applied, the type and width of basis function and the cell-to-electrode distance was modified. 
-
-
-The parameters for this simulations were set in a way that it is similar to the simulation of the ballstick modell.
+In the simulations all the current density distributions were aligned on a $600 \mu m$line, which is parallel to the electrode shank. The resolution of the method is mainly depending on the number of electrodes used for the recording, here to cases of using 16 and 32 electrodes are shown. Also the number of basis functions applied, the type and width of basis function and the cell-to-electrode distance were modified. The basis functions were uniformly distributed. The parameters for this simulations were set in a way that it is similar to the simulation of the ballstick modell.
 %For testing I used the bs_1D_130509test2.Rnw files for the simulation, the bs_130509for_test2.sh for running the simulation and the plotting_test.R, to plot the results....
 
 
@@ -273,10 +274,10 @@ The main advantage of this method compared to the sCSD methods is the possibilit
 
 Basic assumptions:
 \begin{itemize}
-\item the branches between their endpoints are estimated by a line
-\item at the branching points all the current densities are averaged out the solve the barrier conditions
+\item the shape of the branches is estimated by a spline
+%\item at the branching points all the current densities are averaged out the solve the barrier conditions
 \item the sources are evenly distributed
-\item the branches are handles separately, they are independent from each other, an other solution would be to crate overlapping source 
+\item the branches are handled separately, they are independent from each other, an other solution would be to create overlapping sources
 \end{itemize}
 
 Ideas:
@@ -284,6 +285,14 @@ Ideas:
 \item Should we rather use volume sources instead? It will be impossible to trace al the branches...
 \item What spatial distribution is necessary? 
 \end{itemize}
+
+Usually the morphology of the cell is very complex with lot's  of branches and the distribution of this method cannot reach this spatial accuracy. Let's say that the total length of all the segments is 10 000 $\mu$m. In this case if we have 100 recording sites, the spatial distribution will be around 100 um, which compared to the length and with of the cell is not that good, in this case some other approach might works better. One kind of solution for this could be the chopping off the branches with a diameter less than a certain value. This relies on the assumption that the amplitude of the membrane currents on these branches are much smaller???.
+
+
+ The other problem is, that in tissue usually signals originating no further than 60 $mu$m from the electrode can be distinguished from the noise (reference!!!), which is typically  less, than the width of the neuron.
+
+Properties of the multielectrode array:
+
 
 %\subsection{Parameters} 
 %In the calculation shown here the following parameters were used (Fig. 1.):

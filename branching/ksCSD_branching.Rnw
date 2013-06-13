@@ -85,17 +85,49 @@ branch.comp.nb[k]<-length(which(branches==k))
 }
 ####################################
 ####Plotting
+#coordinates of electrode
+elec.kord<-as.matrix(read.table('elcoord_x_y_z'))
+elec.kord<-matrix(elec.kord,ncol=3)
+elec.dist<-elec.kord[2,3]-elec.kord[1,3]
+el.nb<-dim(elec.kord)[1] #number of electrodes
+sigma<-as.matrix(read.table('elprop'))[2] #sigma
+
+
 #3D plot
 colours<-color.scale(branches,col=rainbow(branch.nb))
-sc<-scatterplot3d(alak[,3],alak[,4],alak[,5],color=colours,pch=20)
-sc$points3d(alak[branching.points,3],alak[branching.points,4],alak[branching.points,5],col='BLACK',pch=20)
+limx<-range(alak[,3],elec.kord[,1])
+limy<-range(alak[,4],elec.kord[,2])
+limz<-range(alak[,5],elec.kord[,3])
+sc<-scatterplot3d(alak[,3],alak[,5],alak[,4],color=colours,pch=20, xlim=limx, ylim=limz, zlim=limy,main='The cell and the electrode')
+sc$points3d(alak[branching.points,3],alak[branching.points,5],alak[branching.points,4],col='BLACK',pch=20)
+sc$points3d(elec.kord[,1],elec.kord[,3],elec.kord[,2],col='BLACK',pch=15)
+legend('topright',as.character(c(1:branch.nb)),col=rainbow(branch.nb), lty=1,bg='WHITE')
+@
+
+
+
+<<shadowplot,fig=TRUE,echo=FALSE>>=
+
+#3D plot shadows
+colours<-color.scale(branches,col=rainbow(branch.nb))
+limx<-range(alak[,3],elec.kord[,1])
+limy<-range(alak[,4],elec.kord[,2])
+limz<-range(alak[,5],elec.kord[,3])
+sc<-scatterplot3d(alak[,3],alak[,5],alak[,4],color='WHITE',pch=20, xlim=limx, ylim=limz, zlim=limy,main='Projections of the cell and the electrode')
+sc$points3d(rep(limx[1],comp.nb),alak[,5],alak[,4],col='GRAY',pch=20)
+sc$points3d(alak[,3],rep(limz[2],comp.nb),alak[,4],col='GRAY',pch=20)
+sc$points3d(alak[,3],alak[,5],rep(limy[1],comp.nb),col='GRAY',pch=20)
+sc$points3d(rep(limx[1],el.nb),elec.kord[,3],elec.kord[,2],col='BLACK',pch=15)
+sc$points3d(elec.kord[,1],rep(limz[2],el.nb),elec.kord[,2],col='BLACK',pch=15)
+sc$points3d(elec.kord[,1],elec.kord[,3],rep(limy[1],el.nb),col='BLACK',pch=15)
+
 @
 
 <<branching2,fig=TRUE,echo=FALSE>>=
 #2D plot
 colours<-color.scale(branches,col=rainbow(branch.nb))
-plot(alak[,3],alak[,5],col=colours,pch=20,cex=1.5,xlab='x',ylab='y',main='Cell morphology')
-points(alak[branching.points,3],alak[branching.points,5],col='BLACK',pch=20,cex=1.5)
+plot(alak[,3],alak[,4],col=colours,pch=20,cex=1.5,xlab='x',ylab='y',main='Cell morphology')
+points(alak[branching.points,3],alak[branching.points,4],col='BLACK',pch=20,cex=1.5)
 ########################################################
 
  
@@ -190,12 +222,7 @@ d<-as.matrix(read.table("elprop"))[1]
 seg.length<-as.matrix(read.table('seglength'))
 
 #cell.length<-sum(seg.length)
-#coordinates of electrode
-elec.kord<-as.matrix(read.table('elcoord_x_y_z'))
-elec.kord<-matrix(elec.kord,ncol=3)
-elec.dist<-elec.kord[2,3]-elec.kord[1,3]
-el.nb<-dim(elec.kord)[1] #number of electrodes
-sigma<-as.matrix(read.table('elprop'))[2] #sigma
+
 #membrane currents
 memb.currents<-as.matrix(read.table('membcurr'))
 
@@ -261,7 +288,8 @@ LFP<-as.matrix(read.table('myLFP'))
 #plotting LFP
 par(mfrow=c(2,1))
 matplot(time,t(LFP),t='l',xlab='time (ms)',ylab='LFP')
-image.plot(time,elec.kord[,3],t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(150))
+#image.plot(time,elec.kord[,1],t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(150))
+image.plot(t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(150))
 @
 
 <<parameterek,echo=FALSE>>=
@@ -401,17 +429,20 @@ memb.currents.vonal<-apply(memb.currents,2,funaramvonal)
 #par(mfrow=c(2,1),bg='BLACK')
 #image(t(memb.currents), col=rainbow(150))
 #image(t(C), col=rainbow(150))
+source('alprogik/plotcolscale.R')
 
-par(mfrow=c(1,2),bg='BLACK')
+
+par(mfrow=c(1,2),mar=c(2, 2, 1, 5),bg='GRAY')
 
 min.indexes<-which(C==min(C),arr.ind=TRUE)[2]
-col.limits<-max(abs(range(C[,min.indexes],memb.currents.vonal[,min.indexes])))
+#col.limits<-max(abs(range(C[,min.indexes],memb.currents.vonal[,min.indexes])))
+col.limits<-max(abs(range(C[,min.indexes])))#,memb.currents.vonal[,min.indexes])))
 szinskala<-color.scale(c(C[,min.indexes]),col=rainbow(150),zlim=c(-col.limits,col.limits))
-plot(where.cord[,2],where.cord[,3],pch=16,col=szinskala,asp=1)
+plot(where.cord[,1],where.cord[,2],pch=16,col=szinskala,asp=1)
 
 szinskala2<-color.scale(c(memb.currents.vonal[,min.indexes]),col=rainbow(150),zlim=c(-col.limits,col.limits))
-plot(seg.cord[,2],seg.cord[,3],pch=16,col=szinskala2,asp=1)
-
+plot(seg.cord[,1],seg.cord[,2],pch=16,col=szinskala2,asp=1)
+legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
 #plot(seg.kord[,3],memb.currents.vonal[,min.indexes])
 #points(where.cord[,3],C[,min.indexes],col='RED')
 
