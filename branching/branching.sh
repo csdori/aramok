@@ -33,7 +33,7 @@ echo $dist
 
 for bnum in `seq 80 20 80`
 do
-for bwidth in `seq 15 10 55`
+for bwidth in `seq 45 10 85`
 do
 
 	#This script should set the parameters
