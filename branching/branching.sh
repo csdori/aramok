@@ -4,7 +4,7 @@
 #sh ./branching.sh
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'gauss' 
+for btype in   'cos' 
 do
 
 for dist in `seq 30 10 30`
@@ -33,7 +33,7 @@ echo $dist
 
 for bnum in `seq 80 20 80`
 do
-for bwidth in `seq 45 10 85`
+for bwidth in `seq 25 10 85`
 do
 
 	#This script should set the parameters
