@@ -4,7 +4,7 @@
 #sh ./branching.sh
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'cos' 
+for btype in   'gauss' 
 do
 
 for dist in `seq 30 10 30`
@@ -31,9 +31,9 @@ echo $dist
 	#ipython bs_syn.py
 	#ipython bs_syn_many.py
 
-for bnum in `seq 80 20 80`
+for bnum in `seq 80 20 120`
 do
-for bwidth in `seq 25 10 85`
+for bwidth in `seq 10 5 40`
 do
 
 	#This script should set the parameters

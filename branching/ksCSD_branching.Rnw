@@ -504,7 +504,7 @@ image.plot(t(LFP)/max(abs(LFP)), zlim=c(-max.limits,max.limits), nlevel=150, hor
 lfp.error.abs<-sum(abs(LFP-LFP.est))/length(LFP)
 
 name.lfp.error.abs<-paste('out_branch/lfp_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
-write.table(name.lfp.error.abs,lfp.error.abs,col.names=FALSE, row.names=FALSE)
+write.table(lfp.error.abs,name.lfp.error.abs,col.names=FALSE, row.names=FALSE)
 #az lfpt-t akár simítani is lehetne és úgy összehasonlítani, de minek?
 #par(mfrow=c(2,1))
 #matplot(t(LFP),t='l')
@@ -517,6 +517,31 @@ write.table(name.lfp.error.abs,lfp.error.abs,col.names=FALSE, row.names=FALSE)
 #Az eredeti eloszlást csak közelítve kapjuk vissza...
 
 @
+
+
+
+<<plorbasis,echo=FALSE,fig=TRUE>>=
+plot(1,1,xlim=c(-20,120),ylim=c(0,max(branch.length)))
+#plot(elec.kord[,1],elec.kord[,3],xlim=c(-35,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(elec.kord[1,3]-10,elec.kord[el.nb,3]+10))
+#points(seg.kord[,1],seg.kord[,3],pch=20)
+#points(source.cord[,1],source.cord[,3],col='RED')
+#rect(-seg.diam[db]/2,seg.start[db,3],seg.diam[db]/2,seg.end[db,3])
+
+
+if (base=='gauss'){
+for(j in 1:branch.nb){
+for(k in 1:where.branch.db[j]){
+x<-matrix((0:branch.length[j]),ncol=1)
+gaus<-function(r.t) exp(-sum((where.cord.t[which(where.which==j)[k]]-r.t)^2)/(R^2))
+y<-apply(x,1,gaus)
+lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
+}#k
+}#j
+}
+
+
+@
+
 
 
 
