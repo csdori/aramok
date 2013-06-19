@@ -42,9 +42,10 @@ library('fields')
 
 #alak:shape of the cell.
 #alak<-as.matrix(read.table('morphology/pyramid.txt'))
+#name of moprhology file
 morphoname<-scan('morphology.txt',what='charachter')
-
-alak<-as.matrix(read.table(morphoname))
+#read in the shape of the cell
+alak<-as.matrix(read.table(morphoname, comment.char="#"))
 #SWC: There are four default segment tags in SWC: 1 soma, 2 axon, 3 dendrite (basal when apical present), and 4 apical dendrite.
 #The three dimensional structure of a neuron can be represented in a SWC format (Cannon et al., 1998). SWC is a simple Standardized format. Each line has 7 fields encoding data for a single neuronal compartment:
 #an integer number as compartment identifier

@@ -29,7 +29,7 @@ for(bf.number in 1: length(BF.number)){
 
 
 
-file.name<-paste(place,mit,'_',BF.type[bf.type],'_bwidth',BF.width[bf.width],'_dist',EL.dist[el.dist], '_el', EL.number, '_seg48','_bnum',BF.number[bf.number],sep='')
+file.name<-paste(place,mit,'_',BF.type,'_bwidth',BF.width[bf.width],'_dist',EL.dist[el.dist], '_el', EL.number, '_seg48','_bnum',BF.number[bf.number],sep='')
 measures[ bf.width, bf.number, el.dist ]<-as.matrix(read.table(file.name))
 
 
@@ -39,7 +39,7 @@ measures[ bf.width, bf.number, el.dist ]<-as.matrix(read.table(file.name))
 } #el.dist
 
 
-plot(c(BF.width)), measures[,1,1]
+plot(c(BF.width), measures[,1,1])
 matplot(measures[,,1],t='l')
 
 

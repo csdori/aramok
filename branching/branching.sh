@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-#sh ./branching.sh
+#sh ./branching.sh  #to run this script
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
 for btype in   'gauss' 
