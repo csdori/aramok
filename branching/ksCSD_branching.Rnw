@@ -129,6 +129,10 @@ sc$points3d(elec.kord[,1],elec.kord[,3],rep(limy[1],el.nb),col='BLACK',pch=15)
 colours<-color.scale(branches,col=rainbow(branch.nb))
 plot(alak[,3],alak[,4],col=colours,pch=20,cex=1.5,xlab='x',ylab='y',main='Cell morphology')
 points(alak[branching.points,3],alak[branching.points,4],col='BLACK',pch=20,cex=1.5)
+points(seg.start[,1],seg.start[,2])
+points(seg.end[,1],seg.end[,2],col='RED')
+points(seg.)
+
 ########################################################
 
  
@@ -218,7 +222,6 @@ time<-as.matrix(read.table('time'))
 
 #cell to electrode distance
 d<-as.matrix(read.table("elprop"))[1]
-
 #length of the segments
 seg.length<-as.matrix(read.table('seglength'))
 

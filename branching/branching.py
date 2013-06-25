@@ -207,7 +207,9 @@ cell = LFPy.Cell(**cell_parameters)
 #cell.set_rotation(**rotation)
 
 #set the position of midpoint in soma to Origo (not needed, this is the default)
-cell.set_pos(xpos = 0, ypos = 0, zpos = 0)
+cell.set_pos(xpos = LFPy.cell.neuron.h.x3d(0)
+, ypos = LFPy.cell.neuron.h.y3d(0) , zpos = LFPy.cell.neuron.h.z3d(0))
+#cell.set_pos(xpos = xpontok[1], ypos = ypontok[1], zpos = zpontok[1])
 
 stimulus = LFPy.StimIntElectrode(cell, **pointprocess)
 	
