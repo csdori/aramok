@@ -270,4 +270,24 @@ plotstuff(cell, electrode)
 #pl.show()
 pl.savefig('lfpy_setup.pdf')
 
+################################x
+
+#LFPy.cell.neuron.h...
+h = LFPy.cell.neuron.h
+hossz=len(cell.allsecnames)
+f4 = open(outname + '/segcoords/branchnum', 'w')
+f4.write(str(hossz))
+f4.close()
+b=0
+for x in cell.allseclist:
+	b=b+1
+	xc=list()
+	yc=list()
+	zc=list()
+	for i in range(int(h.n3d())):
+                #print h.x3d(i)
+		xc.append(h.x3d(i))
+		yc.append(h.y3d(i))
+		zc.append(h.z3d(i))	
+	np.savetxt(outname + '/segcoords/segcord'+str(b),np.hstack((xc,yc,zc)))
 

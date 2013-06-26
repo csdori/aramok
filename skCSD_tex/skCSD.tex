@@ -289,7 +289,7 @@ Ideas:
 Usually the morphology of the cell is very complex with lot's  of branches and the distribution of this method cannot reach this spatial accuracy. Let's say that the total length of all the segments is 10 000 $\mu$m. In this case if we have 100 recording sites, the spatial distribution will be around 100 um, which compared to the length and with of the cell is not that good, in this case some other approach might works better. One kind of solution for this could be the chopping off the branches with a diameter less than a certain value. This relies on the assumption that the amplitude of the membrane currents on these branches are much smaller???.
 
 
- The other problem is, that in tissue usually signals originating no further than 60 $mu$m from the electrode can be distinguished from the noise (reference!!!), which is typically  less, than the width of the neuron.
+The other problem is, that in tissue usually signals originating no further than 60 $mu$m from the electrode can be distinguished from the noise (reference!!!), which is typically  less, than the width of the neuron.
 
 Properties of the multielectrode array:
 1D or 2D
@@ -317,6 +317,28 @@ Properties of the multielectrode array:
 %\begin{array}{l l} 
 %1 & \quad \textsl{if \bold} 2\\
 %0 & \quad 2\\
+
+\subsection{Branching morphology}
+
+
+
+LFPy-NEURON
+
+Basic steps:
+-separating the branches
+-get the equation of the curve describing the branches
+-parametrizing these curves (1D)
+-distributing the basis functions along these curve
+-defining the places where we are interested in the current distributions
+ 
+Contradictions between LFPy and my code
+LFPy uses straight lines for segments
+LFPy shifts the cell by default 
+creating the connection between the segments and coordinates in my code
+
+As the LFPy is simulated by using the straight lines I should use the segments used int LFPy to describe my cell, does LFPy provide any branching information?
+
+
 
 
 \end{document}
