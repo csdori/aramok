@@ -26,6 +26,18 @@ morph = [line.strip() for line in f3]
 morpho = morph[0]
 f3.close()
 
+#where are the electrode coordinates
+fewhere = open('elwhere.txt', 'r')
+ewhere = [line.strip() for line in fewhere]
+elwhere = ewhere[0]
+fewhere.close()
+
+felec = open(elwhere, 'r')
+elec = [line.strip() for line in felec]
+felec.close()
+elc=np.hstack((elec))
+elcor=elc.reshape(3,elecnumb)
+
 ###################
 #Plotting
 
@@ -152,11 +164,17 @@ cell_parameters = {
 
 #Generate the grid in xz-plane over which we calculate local field potentials
 #x = pl.linspace(d, d, elecnumb)
-y = pl.linspace(-400, 100, elecnumb)
+#y = pl.linspace(-400, 100, elecnumb)
 #z = pl.linspace(-150, 400, elecnumb)
-z = pl.linspace(-10, 10, 2)
-Y, Z = pl.meshgrid(y, z)
-x = pl.linspace(d, d, elecnumb*2)
+#z = pl.linspace(-10, 10, 2)
+#Y, Z = pl.meshgrid(y, z)
+#x = pl.linspace(d, d, elecnumb*2)
+x=elcor[0,]
+x= x.astype('Float64')
+y=elcor[1,]
+y= y.astype('Float64')
+z=elcor[2,]
+z= z.astype('Float64')
 
 #	y = pl.zeros(X.size)
 
@@ -164,8 +182,8 @@ x = pl.linspace(d, d, elecnumb*2)
 electrodeParameters = {
     'sigma' : 0.5,              # extracellular conductivity
     'x' : x,        # x,y,z-coordinates of contact points
-    'y' : Y.reshape(-1),
-    'z' : Z.reshape(-1),
+    'y' : y,
+    'z' : z,
 #     'method' : 'som_as_point',  #treat soma segment as sphere source
 #     'method' : 'pointsource'
      'method' : 'linesource'
@@ -177,10 +195,10 @@ electrodeParameters = {
 
 
 pointprocess= {
-        'idx' : 0,
+        'idx' : 40,
         'record_current' : True,
         'pptype' : 'IClamp',
-        'amp' : 0.5,
+        'amp' : 0.05,
         #'amp' : 0.2,
         'dur' : 30,
         'delay' : 15
@@ -251,11 +269,11 @@ segdiam = np.hstack(
 np.savetxt(outname + 'segdiam_x_y_z',segdiam)
 
 ##########x
-elec = np.hstack(
-	(electrode.x, electrode.y, electrode.z) 
-)
+#elec = np.hstack(
+#	(electrode.x, electrode.y, electrode.z) 
+#)
 
-np.savetxt(outname + 'elcoord_x_y_z',elec)
+#np.savetxt(outname + 'elcoord_x_y_z',elec)
 
 
 np.savetxt(outname + 'seglength',cell.length)

@@ -1,24 +1,26 @@
 #!/bin/sh
 
 
-#sh ./branching.sh  #to run this script
+#sh ./main.sh  #to run this script
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'gauss' 
+for btype in   'gauss' 'cos' 
 do
 
-for dist in `seq 30 10 30`
+for dist in `seq 40 10 70`
 do
 
 echo $dist
 	
 	echo $dist > celleldist.txt
 	#number of electrodes
-	elnum='16'
+	elnum='32'
 	echo $elnum > elnum.txt
-
+	#where is the file eith the coordinates of the electrodes
+	eleccord='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/elcoord_x_y_z'
+	echo $eleccord > elwhere.txt
 #Morphology
-	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc'
+	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc'
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc'
 	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/morpho1.swc'
 	echo $morpho > morphology.txt
@@ -33,7 +35,7 @@ echo $dist
 
 for bnum in `seq 80 20 120`
 do
-for bwidth in `seq 10 5 40`
+for bwidth in `seq 10 10 40`
 do
 
 	#This script should set the parameters
