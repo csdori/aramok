@@ -24,7 +24,7 @@ LFPy simulation:
 
 
 <<beolvasas,fig=TRUE,echo=FALSE>>=
-#Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_main.Rnw')
+#Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.Rnw')
 hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
 workingdirectory<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
 setwd(workingdirectory)
@@ -136,8 +136,8 @@ seg.length<-as.matrix(read.table('seglength'))
 #membrane currents
 memb.currents<-as.matrix(read.table('membcurr'))
 
-M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett
-
+#M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett
+M<-as.numeric(as.matrix(read.table('out_branch/bestparams'))[6,1])
 }
 @
 
@@ -234,7 +234,7 @@ vonalfun[[j]]<-apply( coords, 2, function(u) approxfun( t.param, u,method="linea
 ########################################
 ############x Basis functions
 #########################################
-M<-as.numeric(read.table('basenum.txt'))
+
 source.branch.db<-round(branch.length/cell.length*M)
 branch.source<-rep(1:segbranch.nb,source.branch.db)
 where.branch.db<-segbranch.comp.nb
@@ -306,11 +306,11 @@ image.plot(t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(150))
 d<-as.matrix(read.table('elprop'))[1] #distance of electrode
 
 #R<- 20 #width of Gaussian or length of step funtion
-R<-as.numeric(read.table('basewidth.txt'))
+R<-as.numeric(as.matrix(read.table('out_branch/bestparams'))[3,1])
 
 #base<-'step' #type of base function ('step', 'Gaussian')
 #base<-'gauss'
-base<-paste(readLines('basetype.txt')) #getting it from a text file made by the .sh file
+base<-as.matrix(read.table('out_branch/bestparams'))[2,1] #getting it from a text file made by the .sh file
 #printing the parameters to the pdf file 
 cat(paste('Number of electrodes:',el.nb))
 cat(paste('Number of base functions:',M))
@@ -613,20 +613,44 @@ lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
 
 @
 
-<<bestparameters,echo=FALSE>>=
-if (file.exists('out_branch/bestparams')== TRUE ){
-bestparams<-as.matrix(read.table('out_branch/bestparams'))
-#ha a mostani jobb az elozo szimulacional
-if(bestparams[1] >current.error.smoothed.abs){
-bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
-write.table(bestparams,'out_branch/bestparams',col.names=FALSE, row.names=FALSE)
-}
+<<thingstofile,echo=FALSE>>=
+
+#write the currents to the file
+C.name<-paste('out_branch/skCSD_current', sep='')
+write.table(C,C.name,col.names=FALSE, row.names=FALSE)
+
+tmatr.name<-paste('out_branch/transfermatrix', sep='')
+write.table(t(K.tilda)%*%solve(K),tmatr.name,col.names=FALSE, row.names=FALSE)
+
+for (i in 1: length(time)){
+picname<-paste('out_branch/pics/skCSD_C',i,'.png', sep='')
+png(picname)
+par(mfrow=c(1,2),mar=c(2, 2, 1, 5),bg='BLACK',col.axis='WHITE',col.lab='WHITE',col.main='WHITE',oma=c(0,0,3,0))
+
+min.indexes<-which(C==min(C),arr.ind=TRUE)[2]
+#col.limits<-max(abs(range(C[,min.indexes],memb.currents.vonal[,min.indexes])))
+col.limits<-max(abs(range(C, memb.currents.vonal)))#,memb.currents.vonal[,min.indexes])))
+
+
+szinskala2<-color.scale(c(memb.currents.vonal[,i]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(seg.cord[,1],seg.cord[,2],pch=16,col=szinskala2,asp=1,main='Original')
+#text(labels=paste('time: ',time[i]),4,col='WHITE',adj=1,cex=1.5)
+mtext(paste(time[i], 'ms'),3,col='WHITE',cex=1.5,outer = TRUE)
+
+
+
+szinskala<-color.scale(c(C[,i]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(where.cord[,1],where.cord[,2],pch=16,col=szinskala,asp=1,main='skCSD')
+legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
+dev.off()
+
 }
 
-if (file.exists('out_branch/bestparams')== FALSE ){
-bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
-write.table(bestparams,'out_branch/bestparams',col.names=FALSE, row.names=FALSE)
-}
+
+
+#plot(seg.kord[,3],memb.currents.vonal[,min.indexes])
+#points(where.cord[,3],C[,min.indexes],col='RED')
+
 
 
 @

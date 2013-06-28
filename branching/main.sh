@@ -4,10 +4,10 @@
 #sh ./main.sh  #to run this script
 
 #for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in   'gauss' 'cos' 
+for btype in 'cos' #'gauss' 
 do
 
-for dist in `seq 40 10 70`
+for dist in `seq 30 10 30`
 do
 
 echo $dist
@@ -35,7 +35,7 @@ echo $dist
 
 for bnum in `seq 80 20 120`
 do
-for bwidth in `seq 10 10 40`
+for bwidth in `seq 30 10 60`
 do
 
 	#This script should set the parameters
@@ -66,4 +66,9 @@ done
 done
 done
 
+#run R once more with the best parameters, produce gif and output file
+R CMD Sweave ksCSD_best.Rnw
 
+for a in `ls -1` ; do convert $a $a.gif; done
+gifsicle --delay 50 --colors 256 `ls -1 *.gif` > test.gif
+rm s*

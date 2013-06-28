@@ -129,11 +129,13 @@ def plotstuff(cell, electrode):
     ax.set_ylabel(r'$V_\mathrm{membrane}$ (mV)')
     
     #plotting the synaptic current
-  #  ax = fig.add_axes([0.75, 0.1, 0.2, 0.35])
-   # ax.plot(cell.tvec, cell.synapses[0].i)
-    #ax.set_title('Synaptic current')
-    #ax.set_ylabel(r'$i_\mathrm{synapse}$ (nA)')
-    #ax.set_xlabel(r'time (ms)')
+    ax = fig.add_axes([0.75, 0.1, 0.2, 0.35])
+    ax.plot(cell.tvec, cell.synapses[0].i)
+    ax.plot(cell.tvec, cell.synapses[1].i)
+    ax.plot(cell.tvec, cell.synapses[2].i)
+    ax.set_title('Synaptic current')
+    ax.set_ylabel(r'$i_\mathrm{synapse}$ (nA)')
+    ax.set_xlabel(r'time (ms)')
 
 
 
@@ -155,7 +157,7 @@ cell_parameters = {
 	'nsegs_method' :  'fixed_length',
 #	'fixed_length': 20, # method for setting number of segments,
 	#'max_nsegs_length':5, #igy kapunk 52 szegmenst
-	'max_nsegs_length':20, #igy kapunk 27 szegmenst
+	'max_nsegs_length':10, #igy kapunk 27 szegmenst
 #	'max_nsegs_length':30, #igy kapunk 18 szegmenst
 #	'nsegs_method' : 'lambda_f',
 #	'lambda_f' : 1000,           # segments are isopotential at this frequency
@@ -194,15 +196,15 @@ electrodeParameters = {
 
 
 
-pointprocess= {
-        'idx' : 40,
-        'record_current' : True,
-        'pptype' : 'IClamp',
-        'amp' : 0.05,
-        #'amp' : 0.2,
-        'dur' : 30,
-        'delay' : 15
-    }
+#pointprocess= {
+#        'idx' : 40,
+#        'record_current' : True,
+#        'pptype' : 'IClamp',
+#        'amp' : 0.05,
+#        #'amp' : 0.2,
+#        'dur' : 30,
+#        'delay' : 15
+#    }
 
 
 
@@ -214,6 +216,7 @@ simulationParameters = {
 	'rec_imem' : True,  # Record Membrane currents during simulation
 	'rec_isyn' : True,  # Record synaptic currents
 }
+
 
 
 
@@ -229,7 +232,58 @@ cell.set_pos(xpos = LFPy.cell.neuron.h.x3d(0)
 , ypos = LFPy.cell.neuron.h.y3d(0) , zpos = LFPy.cell.neuron.h.z3d(0))
 #cell.set_pos(xpos = xpontok[1], ypos = ypontok[1], zpos = zpontok[1])
 
-stimulus = LFPy.StimIntElectrode(cell, **pointprocess)
+
+
+#Synaptic inputs
+
+
+	    # Define synapse parameters
+synapse_parameters = {
+      'idx' : cell.totnsegs*1/4,
+      'e' : 0.,                   # reversal potential
+      'syntype' : 'ExpSyn',       # synapse type
+      #'tau' : 10.,                # syn. time constant
+	'tau' : 2.,
+#      'weight' : .001,            # syn. weight
+      'weight' : .002,            # syn. weight 
+      'record_current' : True,
+}
+
+synapse_parameters2 = {
+      'idx' : cell.totnsegs*2/4,
+      'e' : 0.,                   # reversal potential
+      'syntype' : 'ExpSyn',       # synapse type
+      #'tau' : 10.,                # syn. time constant
+	'tau' : 2.,
+#      'weight' : .001,            # syn. weight
+      'weight' : .003,            # syn. weight 
+      'record_current' : True,
+}
+
+synapse_parameters3 = {
+      'idx' : cell.totnsegs*3/4,
+      'e' : 0.,                   # reversal potential
+      'syntype' : 'ExpSyn',       # synapse type
+      #'tau' : 10.,                # syn. time constant
+	'tau' : 2.,
+#      'weight' : .001,            # syn. weight
+      'weight' : .004,            # syn. weight 
+      'record_current' : True,
+}
+
+
+# Create synapse and set time of synaptic input
+synapse = LFPy.Synapse(cell, **synapse_parameters)
+synapse2 = LFPy.Synapse(cell, **synapse_parameters2)
+synapse3 = LFPy.Synapse(cell, **synapse_parameters3)
+#insert_synapses(synapse_parameters_2, **insert_synapses_2)
+synapse.set_spike_times(np.array([2.]))
+synapse2.set_spike_times(np.array([15.,20., 40.]))
+synapse3.set_spike_times(np.array([5.,25., 44.]))
+
+
+
+#stimulus = LFPy.StimIntElectrode(cell, **pointprocess)
 	
 
 #perform NEURON simulation, results saved as attributes in the cell instance
