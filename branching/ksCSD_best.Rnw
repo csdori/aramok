@@ -98,6 +98,7 @@ limx<-range(alak[,3],elec.kord[,1])
 limy<-range(alak[,4],elec.kord[,2])
 limz<-range(alak[,5],elec.kord[,3])
 sc<-scatterplot3d(seg.start[,1],seg.start[,3],seg.start[,2],color=colours,pch=20, xlim=limx, ylim=limz, zlim=limy,main='The cell and the electrode')
+sc$points3d(elec.kord[,1],elec.kord[,3],elec.kord[,2],col='BLACK',pch=15)
 legend('topright',as.character(c(1:max(segbranches))),col=rainbow(max(segbranches)), lty=1,bg='WHITE')
 
 #3D plot

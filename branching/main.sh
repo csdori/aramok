@@ -2,21 +2,11 @@
 
 
 #sh ./main.sh  #to run this script
-
-#for btype in 'step' 'gauss' 'cos' 'sinxpx'
-for btype in 'cos' #'gauss' 
-do
-
-for dist in `seq 30 10 30`
-do
-
-echo $dist
 	
-	echo $dist > celleldist.txt
 	#number of electrodes
 	elnum='32'
 	echo $elnum > elnum.txt
-	#where is the file eith the coordinates of the electrodes
+	#where is the file with the coordinates of the electrodes
 	eleccord='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/elcoord_x_y_z'
 	echo $eleccord > elwhere.txt
 #Morphology
@@ -24,17 +14,17 @@ echo $dist
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc'
 	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/morpho1.swc'
 	echo $morpho > morphology.txt
-	#cell to electrode distance DISTANCE=10	
 
-
-
-	#Run the LFPy code for ballstick model
+	#Run the LFPy code for generating membrane currents and EC potentials
 	ipython branching.py  
-	#ipython bs_syn.py
-	#ipython bs_syn_many.py
+#type of base dunctions
+for btype in 'cos' 'gauss' 
+do
 
+#number of basis functions
 for bnum in `seq 80 20 120`
 do
+#width of basis functions
 for bwidth in `seq 30 10 60`
 do
 
@@ -53,22 +43,29 @@ do
 	echo $bnum > basenum.txt
 
 	#Run the R Sweave code for ballstick model
-	R CMD Sweave ksCSD_main.Rnw
+	R CMD Sweave /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_main.Rnw
 	#Compile the latex file
-	pdflatex ksCSD_main.tex 
+	pdflatex /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_main.tex 
 
 	#el.nb=10
 	#seg.db=18
 	#copy the compiled file to a specific destination
-	cp ksCSD_main.pdf out_branch/'main_line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
-done
+	cp /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_main.pdf /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/'main_line_'$btype'_'$bwidth'_dist'$dist'_el'$elnum'_seg20_bn'$bnum'.pdf'
 done
 done
 done
 
 #run R once more with the best parameters, produce gif and output file
-R CMD Sweave ksCSD_best.Rnw
+R CMD Sweave /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.Rnw
+#Compile the latex file
+pdflatex /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.tex 
 
+#this creates the gif animation
+cd /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/pics
 for a in `ls -1` ; do convert $a $a.gif; done
-gifsicle --delay 50 --colors 256 `ls -1 *.gif` > test.gif
+gifsicle --delay 30 --colors 256 `ls -1 *.gif` > ksCSD_test.gif
 rm s*
+
+
+
+

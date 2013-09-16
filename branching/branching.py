@@ -9,10 +9,10 @@ import sys
 outname='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/'
 
 #set cell to electrode distance
-f1 = open('celleldist.txt', 'r')
-dist = [line.strip() for line in f1]
-d = int(dist[0])
-f1.close()
+#f1 = open('celleldist.txt', 'r')
+#dist = [line.strip() for line in f1]
+#d = int(dist[0])
+#f1.close()
 #d = 10
 #number of electrodes
 #elecnumb=20
@@ -334,7 +334,7 @@ np.savetxt(outname + 'seglength',cell.length)
 np.savetxt(outname + 'time',cell.tvec)
 
 elprop=np.hstack(
-(d,electrode.sigma)
+(electrode.sigma,electrode.sigma)
 )
 np.savetxt(outname + 'elprop',elprop)
 # Plotting of simulation results:

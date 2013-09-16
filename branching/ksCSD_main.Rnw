@@ -127,7 +127,7 @@ if(lfpy==1){
 time<-as.matrix(read.table('time'))
 
 #cell to electrode distance
-d<-as.matrix(read.table("elprop"))[1]
+#d<-as.matrix(read.table("elprop"))[1]
 #length of the segments
 seg.length<-as.matrix(read.table('seglength'))
 
