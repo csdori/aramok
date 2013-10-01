@@ -38,6 +38,9 @@ library('fields')
 source('alprogik/branching_info.R')
 ####################################
 ####Plotting
+
+outname<-paste('out_',readLines('cellname.txt'),sep='')
+dir.create(outname)
 #coordinates of electrode
 elwhere<-read.table('elwhere.txt')
 elec.kord<-as.matrix(read.table(paste(elwhere[1,1])))
@@ -497,14 +500,14 @@ image.plot(t(LFP)/max(abs(LFP)), zlim=c(-max.limits,max.limits), nlevel=150, hor
 
 lfp.error.abs<-sum(abs(LFP-LFP.est))/length(LFP)
 
-name.lfp.error.abs<-paste('out_branch/lfp_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.lfp.error.abs<-paste(outname,'/lfp_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(lfp.error.abs,name.lfp.error.abs,col.names=FALSE, row.names=FALSE)
 
 
 #Estimation error of the currents
 current.error.abs<-sum(abs(C-memb.currents.vonal))/sum(abs(memb.currents.vonal))
 
-name.current.error.abs<-paste('out_branch/current_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.current.error.abs<-paste(outname,'/current_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(current.error.abs,name.current.error.abs,col.names=FALSE, row.names=FALSE)
 cat('Estimation error of the currents:',current.error.abs)
 
@@ -554,7 +557,7 @@ image.plot(t(C),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsod
 current.error.smoothed.abs<-sum(abs(C-memb.currents.smoothed))/sum(abs(memb.currents.smoothed))
 
 
-name.C.smoothed.abs<-paste('out_branch/smoothed_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.C.smoothed.abs<-paste(outname,'/smoothed_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(current.error.smoothed.abs,name.C.smoothed.abs,col.names=FALSE, row.names=FALSE)
 
 
@@ -592,7 +595,7 @@ legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
 
 
 
-<<plorbasis,echo=FALSE,fig=TRUE>>=
+<<plorbasis, echo=FALSE,fig=TRUE>>=
 plot(1,1,xlim=c(-20,120),ylim=c(0,max(branch.length)))
 #plot(elec.kord[,1],elec.kord[,3],xlim=c(-35,d+10),pch=15,xlab="x (um)",ylab="y (um)", main="Simulational setup",ylim=c(elec.kord[1,3]-10,elec.kord[el.nb,3]+10))
 #points(seg.kord[,1],seg.kord[,3],pch=20)
@@ -614,18 +617,18 @@ lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
 @
 
 <<bestparameters,echo=FALSE>>=
-if (file.exists('out_branch/bestparams')== TRUE ){
-bestparams<-as.matrix(read.table('out_branch/bestparams'))
+if (file.exists(paste(outname,'/bestparams',sep=''))== TRUE ){
+bestparams<-as.matrix(read.table(paste(outname,'/bestparams',sep='')))
 #ha a mostani jobb az elozo szimulacional
 if(bestparams[1] >current.error.smoothed.abs){
 bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
-write.table(bestparams,'out_branch/bestparams',col.names=FALSE, row.names=FALSE)
+write.table(bestparams,paste(outname,'/bestparams',sep=''),col.names=FALSE, row.names=FALSE)
 }
 }
 
-if (file.exists('out_branch/bestparams')== FALSE ){
+if (file.exists(paste(outname,'/bestparams',sep=''))== FALSE ){
 bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
-write.table(bestparams,'out_branch/bestparams',col.names=FALSE, row.names=FALSE)
+write.table(bestparams,paste(outname,'/bestparams',sep=''),col.names=FALSE, row.names=FALSE)
 }
 
 

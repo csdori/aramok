@@ -29,6 +29,7 @@ hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
 workingdirectory<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
 setwd(workingdirectory)
 
+
 library('scatterplot3d')
 library('foreach')
 library('doMC')
@@ -38,6 +39,8 @@ library('fields')
 source('alprogik/branching_info.R')
 ####################################
 ####Plotting
+
+outname<-paste('out_',readLines('cellname.txt'),sep='')
 #coordinates of electrode
 elwhere<-read.table('elwhere.txt')
 elec.kord<-as.matrix(read.table(paste(elwhere[1,1])))
@@ -138,7 +141,7 @@ seg.length<-as.matrix(read.table('seglength'))
 memb.currents<-as.matrix(read.table('membcurr'))
 
 #M<-as.numeric(read.table('basenum.txt')) #number of sources (a feltételezett
-M<-as.numeric(as.matrix(read.table('out_branch/bestparams'))[6,1])
+M<-as.numeric(as.matrix(read.table(paste(outname,'/bestparams',sep='')))[6,1])
 }
 @
 
@@ -307,11 +310,11 @@ image.plot(t(LFP),xlab='time (ms)',ylab='LFP',col=rainbow(150))
 d<-as.matrix(read.table('elprop'))[1] #distance of electrode
 
 #R<- 20 #width of Gaussian or length of step funtion
-R<-as.numeric(as.matrix(read.table('out_branch/bestparams'))[3,1])
+R<-as.numeric(as.matrix(read.table(paste(outname,'/bestparams',sep=''))[3,1]))
 
 #base<-'step' #type of base function ('step', 'Gaussian')
 #base<-'gauss'
-base<-as.matrix(read.table('out_branch/bestparams'))[2,1] #getting it from a text file made by the .sh file
+base<-as.matrix(read.table(paste(outname,'/bestparams',sep='')))[2,1] #getting it from a text file made by the .sh file
 #printing the parameters to the pdf file 
 cat(paste('Number of electrodes:',el.nb))
 cat(paste('Number of base functions:',M))
@@ -498,14 +501,14 @@ image.plot(t(LFP)/max(abs(LFP)), zlim=c(-max.limits,max.limits), nlevel=150, hor
 
 lfp.error.abs<-sum(abs(LFP-LFP.est))/length(LFP)
 
-name.lfp.error.abs<-paste('out_branch/lfp_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.lfp.error.abs<-paste(outname,'/lfp_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(lfp.error.abs,name.lfp.error.abs,col.names=FALSE, row.names=FALSE)
 
 
 #Estimation error of the currents
 current.error.abs<-sum(abs(C-memb.currents.vonal))/sum(abs(memb.currents.vonal))
 
-name.current.error.abs<-paste('out_branch/current_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.current.error.abs<-paste(outname,'/current_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(current.error.abs,name.current.error.abs,col.names=FALSE, row.names=FALSE)
 cat('Estimation error of the currents:',current.error.abs)
 
@@ -555,7 +558,7 @@ image.plot(t(C),main='Estimated MC',xlab="time (ms)",ylab="y (um)",zlim=limitsod
 current.error.smoothed.abs<-sum(abs(C-memb.currents.smoothed))/sum(abs(memb.currents.smoothed))
 
 
-name.C.smoothed.abs<-paste('out_branch/smoothed_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
+name.C.smoothed.abs<-paste(outname,'/smoothed_error_',base,'_bwidth',R, '_dist',d, '_el',el.nb,'_seg', seg.db,'_bnum',M, sep='')
 write.table(current.error.smoothed.abs,name.C.smoothed.abs,col.names=FALSE, row.names=FALSE)
 
 
@@ -615,16 +618,16 @@ lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
 @
 
 <<thingstofile,echo=FALSE>>=
-
+dir.create('pics')
 #write the currents to the file
-C.name<-paste('out_branch/skCSD_current', sep='')
+C.name<-paste(outname,'/skCSD_current', sep='')
 write.table(C,C.name,col.names=FALSE, row.names=FALSE)
 
-tmatr.name<-paste('out_branch/transfermatrix', sep='')
+tmatr.name<-paste(outname,'/transfermatrix', sep='')
 write.table(t(K.tilda)%*%solve(K),tmatr.name,col.names=FALSE, row.names=FALSE)
 
 for (i in 1: length(time)){
-picname<-paste('out_branch/pics/skCSD_C',i,'.png', sep='')
+picname<-paste(outname,'/pics/skCSD_C',i,'.png', sep='')
 png(picname)
 par(mfrow=c(1,2),mar=c(2, 2, 1, 5),bg='BLACK',col.axis='WHITE',col.lab='WHITE',col.main='WHITE',oma=c(0,0,3,0))
 

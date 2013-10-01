@@ -223,13 +223,12 @@ simulationParameters = {
 #Initialize cell instance, using the LFPy.Cell class
 cell = LFPy.Cell(**cell_parameters)
 
-#rotation
-#rotation = {'x' : 1.233, 'y' : 0.236, 'z' : np.pi}
+#rotating the cell
+#rotation = {'x' : np.pi/2, 'y' : 0, 'z' : 0}
 #cell.set_rotation(**rotation)
 
 #set the position of midpoint in soma to Origo (not needed, this is the default)
-cell.set_pos(xpos = LFPy.cell.neuron.h.x3d(0)
-, ypos = LFPy.cell.neuron.h.y3d(0) , zpos = LFPy.cell.neuron.h.z3d(0))
+cell.set_pos(xpos = LFPy.cell.neuron.h.x3d(0) , ypos = LFPy.cell.neuron.h.y3d(0) , zpos = LFPy.cell.neuron.h.z3d(0))
 #cell.set_pos(xpos = xpontok[1], ypos = ypontok[1], zpos = zpontok[1])
 
 
