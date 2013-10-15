@@ -34,6 +34,7 @@ library('scatterplot3d')
 library('foreach')
 library('doMC')
 library('fields')
+library('MASS')
 
 #branching detailes based on the morphology file
 source('alprogik/branching_info.R')
@@ -400,7 +401,9 @@ K.tilda<-array(0,c(source.nb,el.nb))
 K<-t(B)%*%B
 K.tilda<-t(B)%*%B.tilda
 
-C<-1/const*t(K.tilda)%*%solve(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
+#Let's use oseudoinverse
+C<-1/const*t(K.tilda)%*%ginv(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
+#C<-1/const*t(K.tilda)%*%solve(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
 #C<-C/10^6 #a sigmaban cm^2-et használnak
 @
 
@@ -624,7 +627,7 @@ C.name<-paste(outname,'/skCSD_current', sep='')
 write.table(C,C.name,col.names=FALSE, row.names=FALSE)
 
 tmatr.name<-paste(outname,'/transfermatrix', sep='')
-write.table(t(K.tilda)%*%solve(K),tmatr.name,col.names=FALSE, row.names=FALSE)
+write.table(t(K.tilda)%*%ginv(K),tmatr.name,col.names=FALSE, row.names=FALSE)
 
 for (i in 1: length(time)){
 picname<-paste(outname,'/pics/skCSD_C',i,'.png', sep='')
@@ -637,14 +640,14 @@ col.limits<-max(abs(range(C, memb.currents.vonal)))#,memb.currents.vonal[,min.in
 
 
 szinskala2<-color.scale(c(memb.currents.vonal[,i]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
-plot(seg.cord[,1],seg.cord[,2],pch=16,col=szinskala2,asp=1,main='Original')
+plot(seg.cord[,1],seg.cord[,3],pch=16,col=szinskala2,asp=1,main='Original')
 #text(labels=paste('time: ',time[i]),4,col='WHITE',adj=1,cex=1.5)
 mtext(paste(time[i], 'ms'),3,col='WHITE',cex=1.5,outer = TRUE)
 
 
 
 szinskala<-color.scale(c(C[,i]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
-plot(where.cord[,1],where.cord[,2],pch=16,col=szinskala,asp=1,main='skCSD')
+plot(where.cord[,1],where.cord[,3],pch=16,col=szinskala,asp=1,main='skCSD')
 legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
 dev.off()
 

@@ -4,8 +4,8 @@
 #sh ./main.sh  #to run this script
 	
 	#number of electrodes
-	elnum='32'
-	echo $elnum > elnum.txt
+	#elnum='32'
+	#echo $elnum > elnum.txt
 	#where is the file with the coordinates of the electrodes
 	eleccord='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/elcoord_x_y_z'
 	echo $eleccord > elwhere.txt
@@ -23,16 +23,18 @@
 	cellname='villa'  
 	echo $cellname > cellname.txt
 	#Run the LFPy code for generating membrane currents and EC potentials
-	ipython branching.py  
+	#ipython branching.py
+	ipython branching_villa.py  
 #type of base dunctions
-for btype in 'cos' 'gauss' 
+for btype in  'gauss' #'cos' 
 do
 
 #number of basis functions
 for bnum in `seq 80 20 120`
 do
 #width of basis functions
-for bwidth in `seq 30 10 60`
+for bwidth in `seq 60 10 100`
+#for bwidth in `seq 10 10 40`
 do
 
 	#This script should set the parameters

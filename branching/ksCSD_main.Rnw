@@ -33,6 +33,7 @@ library('scatterplot3d')
 library('foreach')
 library('doMC')
 library('fields')
+library('MASS')
 
 #branching detailes based on the morphology file
 source('alprogik/branching_info.R')
@@ -399,7 +400,9 @@ K.tilda<-array(0,c(source.nb,el.nb))
 K<-t(B)%*%B
 K.tilda<-t(B)%*%B.tilda
 
-C<-1/const*t(K.tilda)%*%solve(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
+#Let's use oseudoinverse
+C<-1/const*t(K.tilda)%*%ginv(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
+#C<-1/const*t(K.tilda)%*%solve(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
 #C<-C/10^6 #a sigmaban cm^2-et használnak
 @
 
@@ -589,9 +592,48 @@ legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
 @
 
 
+<<smoothed_plot3,fig=TRUE,echo=FALSE>>=
+#######################################x
+#plot cell shape- colourplot
+
+
+par(mfrow=c(1,2),mar=c(2, 2, 1, 5),bg='GRAY')
+
+min.indexes<-which(C==min(C),arr.ind=TRUE)[2]
+#col.limits<-max(abs(range(C[,min.indexes],memb.currents.vonal[,min.indexes])))
+col.limits<-max(abs(range(C[,min.indexes], memb.currents.smoothed[,min.indexes])))#,memb.currents.vonal[,min.indexes])))
+szinskala<-color.scale(c(C[,min.indexes]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(where.cord[,1],where.cord[,3],pch=16,col=szinskala,asp=1)
+
+szinskala2<-color.scale(c(memb.currents.smoothed[,min.indexes]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(seg.cord[,1],seg.cord[,3],pch=16,col=szinskala2,asp=1)
+legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
+
+
+@
+
+<<smoothed_plot4,fig=TRUE,echo=FALSE>>=
+#######################################x
+#plot cell shape- colourplot
+
+
+par(mfrow=c(1,2),mar=c(2, 2, 1, 5),bg='GRAY')
+
+min.indexes<-which(C==min(C),arr.ind=TRUE)[2]
+#col.limits<-max(abs(range(C[,min.indexes],memb.currents.vonal[,min.indexes])))
+col.limits<-max(abs(range(C[,min.indexes], memb.currents.smoothed[,min.indexes])))#,memb.currents.vonal[,min.indexes])))
+szinskala<-color.scale(c(C[,min.indexes]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(where.cord[,2],where.cord[,3],pch=16,col=szinskala,asp=1)
+
+szinskala2<-color.scale(c(memb.currents.smoothed[,min.indexes]),col=rainbow(150),zlim=c(-col.limits*1.01,col.limits*1.01))
+plot(seg.cord[,2],seg.cord[,3],pch=16,col=szinskala2,asp=1)
+legend.col(col=rainbow(150),lev=c(-col.limits,col.limits))
 
 
 
+
+
+@
 
 
 
