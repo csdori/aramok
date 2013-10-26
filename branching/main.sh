@@ -64,6 +64,9 @@ done
 done
 done
 
+#calculating traditional CSD
+Rscript /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/trad_CSD.R
+
 #run R once more with the best parameters, produce gif and output file
 R CMD Sweave /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.Rnw
 #Compile the latex file

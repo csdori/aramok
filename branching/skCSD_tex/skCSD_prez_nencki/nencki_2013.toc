@@ -1,0 +1,10 @@
+\beamer@endinputifotherversion {3.10pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Motivation}{2}{0}{1}
+\beamer@sectionintoc {2}{The Roots}{4}{0}{2}
+\beamer@sectionintoc {3}{The skCSD method}{9}{0}{3}
+\beamer@subsectionintoc {3}{1}{Theoretical Issues}{9}{0}{3}
+\beamer@subsectionintoc {3}{2}{Practical issues}{12}{0}{3}
+\beamer@sectionintoc {4}{Simulations}{16}{0}{4}
+\beamer@sectionintoc {5}{Simulations}{20}{0}{5}
+\beamer@sectionintoc {6}{Results}{22}{0}{6}
