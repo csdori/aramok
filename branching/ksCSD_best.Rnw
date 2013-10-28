@@ -671,7 +671,8 @@ Lets calculate
 
 
 %paty yang poland
-
+%Tennivalo:
+%ahol a sejten abrazojuk az aramokat a videohoz, ott mellé lehetne rakni a mért LFP-t, a számolt CSD-t és esetleg sCSD-t...
 
 
 
