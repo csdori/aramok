@@ -25,22 +25,38 @@
 	#Run the LFPy code for generating membrane currents and EC potentials
 	#ipython branching.py
 	ipython branching_villa.py  
+	echo 'simulation of EC ready!'
 #type of base dunctions
-for btype in  'gauss' #'cos' 
+for btype in  'gauss' 'cos' 
 do
 
+#the branching_villa python code saves the length of the cell, lets read it back
+celllength=$(< celllength)
+
+#there is a minimum number of basis functions needed if we want to cover the cell with them
+#this number should be bigger than the number of electrodes
+elnum=$(< elnum.txt)
 #number of basis functions
-for bnum in `seq 80 20 120`
+#for bnum in `seq 80 20 120`
+((bnumlow=elnum))
+((bnumhigh=elnum*3))
+for bnum in `seq $bnumlow $elnum $bnumhigh`
 do
 #width of basis functions
-for bwidth in `seq 60 10 100`
-#for bwidth in `seq 10 10 40`
+((bwidthlow=celllength / bnum + 10))
+
+((bwidthigh=celllength/bnum*2))
+#((bwidthstep=bwidthigh/2-bwidthlow/2))
+for bwidth in $bwidthlow $bwidthigh
 do
+#for bwidth in `seq $bwidthlow $bwidthstep $bwidthigh`
+#for bwidth in `seq 10 10 40`
 
 	#This script should set the parameters
-		
 	
 	
+	
+	echo $btype $bwidth $bnum 
 	# set width of base function
 	#bwidth='40'
 	echo $bwidth > basewidth.txt
@@ -66,6 +82,11 @@ done
 
 #calculating traditional CSD
 Rscript /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/trad_CSD.R
+cd /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_$cellname/pics
+for a in `ls -1` ; do convert $a $a.gif; done
+gifsicle --delay 30 --colors 256 `ls -1 CSD*.gif` > tradCSD.gif
+rm s*
+
 
 #run R once more with the best parameters, produce gif and output file
 R CMD Sweave /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.Rnw

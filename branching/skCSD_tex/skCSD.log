@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  27 OCT 2013 15:12
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  4 NOV 2013 16:11
 entering extended mode
  %&-line parsing enabled.
 **skCSD.tex
@@ -258,13 +258,13 @@ LaTeX Warning: Citation `Soma' on page 1 undefined on input line 51.
 
 LaTeX Warning: Citation `DanielW' on page 2 undefined on input line 115.
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 146.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 152.
 
 (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 152.
  [2]
 <plots/distributions.png, id=26, 548.0475pt x 239.89626pt>
 File: plots/distributions.png Graphic file (type png)
@@ -320,7 +320,7 @@ File: plots/error_Rtest_gauss2_patt13_22_el_both.png Graphic file (type png)
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-LaTeX Warning: Citation `LFPy' on page 3 undefined on input line 283.
+LaTeX Warning: Citation `LFPy' on page 3 undefined on input line 289.
 
 [3 <./plots/distributions.png (PNG copy)>] [4 <./plots/setup_test.png (PNG copy
 )> <./plots/error_Rtest_cos_patt1_el_both.png (PNG copy)>] [5 <./plots/error_Rt
@@ -330,9 +330,6 @@ y)> <./plots/error_Rtest_gauss2_patt3_12_el_both.png (PNG copy)>] [7 <./plots/e
 rror_Rtest_gauss2_patt13_22_el_both.png (PNG copy)>] (./skCSD.aux)
 
 LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
@@ -359,9 +356,9 @@ texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive
 /fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type
 1/public/amsfonts/cm/cmsy6.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
 fonts/cm/cmsy8.pfb>
-Output written on skCSD.pdf (7 pages, 844747 bytes).
+Output written on skCSD.pdf (7 pages, 846137 bytes).
 PDF statistics:
- 321 PDF objects out of 1000 (max. 8388607)
+ 325 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  41 words of extra memory for PDF output out of 10000 (max. 10000000)
 
