@@ -42,6 +42,8 @@ source('alprogik/branching_info.R')
 
 outname<-paste('out_',readLines('cellname.txt'),sep='')
 dir.create(outname)
+outname.pics<-paste('out_',readLines('cellname.txt'),"/pics",sep='')
+dir.create(outname.pics)
 #coordinates of electrode
 elwhere<-read.table('elwhere.txt')
 elec.kord<-as.matrix(read.table(paste(elwhere[1,1])))

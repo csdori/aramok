@@ -1,5 +1,7 @@
-place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/'
-saving.location<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/'
+#place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/'
+#saving.location<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_branch/'
+place<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_ballstick/'
+saving.location<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_ballstick/'
 
 
 

@@ -621,7 +621,7 @@ lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
 @
 
 <<thingstofile,echo=FALSE>>=
-dir.create('pics')
+
 #write the currents to the file
 C.name<-paste(outname,'/skCSD_current', sep='')
 write.table(C,C.name,col.names=FALSE, row.names=FALSE)
