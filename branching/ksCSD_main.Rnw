@@ -23,7 +23,7 @@ LFPy simulation:
 
 
 
-<<beolvasas,fig=TRUE,echo=FALSE>>=
+<<beolvasas,echo=FALSE>>=
 #Sweave('/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_main.Rnw')
 hovament<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
 workingdirectory<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching'
@@ -96,6 +96,9 @@ segbranch.coords[[j]]<-cordmatr
 
 
 #
+@
+
+<<setupplot,fig=TRUE,echo=FALSE>>=
 
 par(mfrow=c(1,2))
 #3D plot  from LFP segments
@@ -566,6 +569,10 @@ name.C.smoothed.abs<-paste(outname,'/smoothed_error_',base,'_bwidth',R, '_dist',
 write.table(current.error.smoothed.abs,name.C.smoothed.abs,col.names=FALSE, row.names=FALSE)
 
 
+#lets save it also as the actual value with all the other error measures
+write.table(current.error.smoothed.abs,'smoothed_error_current',col.names=FALSE, row.names=FALSE)
+write.table(current.error.abs,'current_error_current',col.names=FALSE, row.names=FALSE)
+write.table(lfp.error.abs,'lfp_error_current',col.names=FALSE, row.names=FALSE)
 #curve(exp(-x^2/R^2),-100,100)
 
 @
