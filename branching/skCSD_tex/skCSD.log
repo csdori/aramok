@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  4 NOV 2013 16:11
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  26 DEC 2013 23:18
 entering extended mode
  %&-line parsing enabled.
 **skCSD.tex
@@ -161,7 +161,11 @@ Package ifvtex Info: VTeX not detected.
 \Gm@odd@mp=\dimen116
 \Gm@even@mp=\dimen117
 \Gm@dimlist=\toks25
-) (./skCSD.aux)
+) (./skCSD.aux
+
+LaTeX Warning: Label `fig: test_setup2' multiply defined.
+
+)
 \openout1 = `skCSD.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 15.
@@ -176,8 +180,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 15.
 LaTeX Font Info:    ... okay on input line 15.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 15.
 LaTeX Font Info:    ... okay on input line 15.
-
-(/usr/share/texmf-texlive/tex/latex/ucs/ucsencs.def
+ (/usr/share/texmf-texlive/tex/latex/ucs/ucsencs.def
 File: ucsencs.def 2003/11/29 Fixes to fontencodings LGR, T3
 )
 (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
@@ -244,6 +247,9 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 16.
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
 
+LaTeX Warning: No \author given.
+
+
 LaTeX Warning: Citation `Nicholson' on page 1 undefined on input line 40.
 
 
@@ -258,88 +264,68 @@ LaTeX Warning: Citation `Soma' on page 1 undefined on input line 51.
 
 LaTeX Warning: Citation `DanielW' on page 2 undefined on input line 115.
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 152.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 146.
 
 (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 152.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
  [2]
-<plots/distributions.png, id=26, 548.0475pt x 239.89626pt>
-File: plots/distributions.png Graphic file (type png)
 
-<use plots/distributions.png>
-<plots/setup_test.png, id=27, 557.08125pt x 547.04375pt>
-File: plots/setup_test.png Graphic file (type png)
+LaTeX Warning: Reference `fig: test_setup' on page 3 undefined on input line 18
+1.
 
-<use plots/setup_test.png>
+<plots/ballstick.png, id=26, 301.125pt x 602.25pt>
+File: plots/ballstick.png Graphic file (type png)
+ <use plots/ballstick.png>
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 188--189
+[][] 
+ []
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+<plots/villa.png, id=27, 301.125pt x 602.25pt>
+File: plots/villa.png Graphic file (type png)
+ <use plots/villa.png>
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 194--195
+[][] 
+ []
 
-<plots/error_Rtest_cos_patt1_el_both.png, id=28, 459.21562pt x 104.64093pt>
-File: plots/error_Rtest_cos_patt1_el_both.png Graphic file (type png)
+<plots/morpho1.png, id=28, 301.125pt x 602.25pt>
+File: plots/morpho1.png Graphic file (type png)
+ <use plots/morpho1.png>
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 200--201
+[][] 
+ []
 
-<use plots/error_Rtest_cos_patt1_el_both.png>
+[3 <./plots/ballstick.png (PNG copy)> <./plots/villa.png (PNG copy)> <./plots/m
+orpho1.png (PNG copy)>]
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+LaTeX Warning: Citation `LFPy' on page 4 undefined on input line 222.
 
-<plots/error_Rtest_cos_patt3_12_el_both.png, id=29, 1204.5pt x 602.25pt>
-File: plots/error_Rtest_cos_patt3_12_el_both.png Graphic file (type png)
+[4] <plots/errorplot1_currenterror.png, id=35, 1241.438pt x 1248.665pt>
+File: plots/errorplot1_currenterror.png Graphic file (type png)
 
-<use plots/error_Rtest_cos_patt3_12_el_both.png>
+<use plots/errorplot1_currenterror.png>
+<plots/errorplot1_smoothed.png, id=37, 1207.712pt x 1228.59pt>
+File: plots/errorplot1_smoothed.png Graphic file (type png)
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<plots/error_Rtest_cos_patt13_22_el_both.png, id=30, 1204.5pt x 602.25pt>
-File: plots/error_Rtest_cos_patt13_22_el_both.png Graphic file (type png)
-
-<use plots/error_Rtest_cos_patt13_22_el_both.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<plots/error_Rtest_gauss2_patt1_el_both.png, id=31, 444.15938pt x 92.59593pt>
-File: plots/error_Rtest_gauss2_patt1_el_both.png Graphic file (type png)
-
-<use plots/error_Rtest_gauss2_patt1_el_both.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<plots/error_Rtest_gauss2_patt3_12_el_both.png, id=32, 1204.5pt x 602.25pt>
-File: plots/error_Rtest_gauss2_patt3_12_el_both.png Graphic file (type png)
-
-<use plots/error_Rtest_gauss2_patt3_12_el_both.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<plots/error_Rtest_gauss2_patt13_22_el_both.png, id=33, 1204.5pt x 602.25pt>
-File: plots/error_Rtest_gauss2_patt13_22_el_both.png Graphic file (type png)
-
-<use plots/error_Rtest_gauss2_patt13_22_el_both.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: Citation `LFPy' on page 3 undefined on input line 289.
-
-[3 <./plots/distributions.png (PNG copy)>] [4 <./plots/setup_test.png (PNG copy
-)> <./plots/error_Rtest_cos_patt1_el_both.png (PNG copy)>] [5 <./plots/error_Rt
-est_cos_patt3_12_el_both.png (PNG copy)> <./plots/error_Rtest_cos_patt13_22_el_
-both.png (PNG copy)>] [6 <./plots/error_Rtest_gauss2_patt1_el_both.png (PNG cop
-y)> <./plots/error_Rtest_gauss2_patt3_12_el_both.png (PNG copy)>] [7 <./plots/e
-rror_Rtest_gauss2_patt13_22_el_both.png (PNG copy)>] (./skCSD.aux)
+<use plots/errorplot1_smoothed.png> [5] [6 <./plots/errorplot1_currenterror.png
+>] [7 <./plots/errorplot1_smoothed.png>] [8] (./skCSD.aux)
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: There were multiply-defined labels.
+
  ) 
 Here is how much of TeX's memory you used:
- 2746 strings out of 495061
- 35649 string characters out of 1182621
- 99863 words of memory out of 3000000
- 5880 multiletter control sequences out of 15000+50000
+ 2729 strings out of 495061
+ 34669 string characters out of 1182621
+ 99876 words of memory out of 3000000
+ 5866 multiletter control sequences out of 15000+50000
  20299 words of font info for 57 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 27i,6n,32p,667b,219s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,7n,32p,667b,277s stack positions out of 5000i,500n,10000p,200000b,50000s
  </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/zoe
 /.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/zoe/.texmf-var/f
 onts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/zoe/.texmf-var/fonts/pk/ljfou
@@ -356,9 +342,9 @@ texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive
 /fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type
 1/public/amsfonts/cm/cmsy6.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
 fonts/cm/cmsy8.pfb>
-Output written on skCSD.pdf (7 pages, 846137 bytes).
+Output written on skCSD.pdf (8 pages, 780280 bytes).
 PDF statistics:
- 325 PDF objects out of 1000 (max. 8388607)
+ 320 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

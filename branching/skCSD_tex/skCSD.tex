@@ -9,7 +9,7 @@
 \usepackage{graphicx}
 \usepackage[margin=0.5in]{geometry}
 
-\author{Dorottya Cserpan}
+%\author{Dorottya Cserpan}
 
 \title{Single Cell Kernel Current Source Density}
 \begin{document}
@@ -130,16 +130,10 @@ Using the simulated or measured extracellular potentials ($V$) and assuming $\ti
  \end{equation}
 
 
+
+
 \subsection{Testing the method on simulated data}
-
-
-
-\subsubsection{Measuring the error}
-
-%current.error.abs<-sum(abs(C-memb.currents.vonal))/sum(abs(memb.currents.vonal))
-
-%smoothing
-%current.error.smoothed.abs<-sum(abs(C-memb.currents.smoothed))/sum(abs(memb.currents.smoothed))
+As there are several parameters used in the simulations, like the width and number of used base functions, the number and arrangements of the electrodes, the cell-electrode distance and the morphology of the cell, it is impossible the study all cases. Therefore we chose some special cases in terms of morphology for studying the behabiour of the method. 
 
 \subsubsection{ Linear source solution }
 %As linear current distributions are used for the reconstruction, the method can be reduced to 1 dimension. For we assume that the cell can be reconstructed from lines.
@@ -181,39 +175,7 @@ b_i (x,y,z)= A \tilde{b}_i (t')= \frac{1}{4 \pi \sigma} \int
 
 
 
-%\begin{equation}
-%\begin{align}
-%b_i (x,y,z) &= 
-%\frac{1}{4 \pi \sigma} \int 
-%\frac{ e^{- \frac{(x_a + (x_b - x_a) t -x_i)^2+(y_a+(y_b-y_a)t-y_i)^2+( z_a+(z_b-z_a)t-z_i)^2}{R^2}}}{\sqrt{(x-x_a + (x_b - x_a) t)^2+(y- y_a+(y_b-y_a)t )^2+(z-z_a+(z_b-z_a)t)^2}} \\
-%&\sqrt{(x_b-x_a)^2 +(y_b-y_a)^2+(z_b-z_a)^2} dt
-%\end{align}
-%\end{equation}
-
-%\subsection{Simulations}
-
 Simulational parameters
-
-%%Different distribution used
-%\begin{itemize}
-%\item test distributions (cosinus with different frequency, Gaussians with different widths)
-%\item ballstick neuron with current injected to the soma (spatiotemporal current distribution)
-%\item ballstick neuron with synapsis (spatiotemporal current distribution)
-%\end{itemize}
-
-
-
-%\subsubsection{Test distributions on a line}
-For developing the basic properties of the method and finding the best parameters for a specific setup we used some simple distributions \ref{fig:distribution} to make estimations.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width= 10 cm]{plots/distributions.png}
-\caption{The test distributions}
-\label{fig:distribution}
-\end{figure}
-
-
 
 
 A scratch of the simulational setup is show on \ref{fig: test_setup}.
@@ -221,60 +183,31 @@ A scratch of the simulational setup is show on \ref{fig: test_setup}.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width= 10 cm]{plots/setup_test.png}
-\caption{The setup for the test simulation}
-\label{fig: test_setup}
+%\includegraphics[width= 10 cm]{plots/setup_test.png}
+\begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width= 6 cm]{plots/ballstick.png}
+\caption{Ballstick morphology}
+\label{fig: test_setup1}
+\end{minipage}
+\quad
+\begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width= 6 cm]{plots/villa.png}
+\caption{Y-shape morphology}
+\label{fig: test_setup2}
+\end{minipage}
+\quad
+\begin{minipage}[b]{0.3\linewidth}
+\includegraphics[width= 6 cm]{plots/morpho1.png}
+\caption{Branching morphology}
+\label{fig: test_setup2}
+\end{minipage}
+
+
+
 \end{figure}
+
+
 In the simulations all the current density distributions were aligned on a $600 \mu m$line, which is parallel to the electrode shank. The resolution of the method is mainly depending on the number of electrodes used for the recording, here to cases of using 16 and 32 electrodes are shown. Also the number of basis functions applied, the type and width of basis function and the cell-to-electrode distance were modified. The basis functions were uniformly distributed. The parameters for this simulations were set in a way that it is similar to the simulation of the ballstick modell.
-%For testing I used the bs_1D_130509test2.Rnw files for the simulation, the bs_130509for_test2.sh for running the simulation and the plotting_test.R, to plot the results....
-
-
-%figures with cos basis functions
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_cos_patt1_el_both.png}
-\caption{Type of basis function: cos, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_cos0}
-\end{figure}
-
-
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_cos_patt3_12_el_both.png}
-\caption{Type of basis function: cos, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_cos}
-\end{figure}
-
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_cos_patt13_22_el_both.png}
-\caption{Type of basis function: cos, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_cos2}
-\end{figure}
-%figures with gaussian basis functions
-
-
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_gauss2_patt1_el_both.png}
-\caption{Type of basis function: gauss, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_gauss0}
-\end{figure}
-
-
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_gauss2_patt3_12_el_both.png}
-\caption{Type of basis function: gauss, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_gauss}
-\end{figure}
-
-\begin{figure}[h]
-%\centering
-\includegraphics[width=15cm]{plots/error_Rtest_gauss2_patt13_22_el_both.png}
-\caption{Type of basis function: gauss, cell to el dist: 30 um, R:20-100, el nb: 16,32 , number of basis function: 40,60,80}
-\label{fig:error_gauss2}
-\end{figure}
 
 Conclusion
 
@@ -288,7 +221,7 @@ Generally increasing the number of the used basis functions improves the accurac
 \textbf{Stimulation of the soma}
 The simulation of extracellular potential of a ballstick neuron model was done by using LFPy \cite{LFPy}, which is a tool designed to calculate the extracellular potential of model neurons. An excitatory current lasting 100 ms injected into the soma-ball assured the continuous action potential generation.  The 1 dimensional neuron model was aligned parallel to the electrode, similar to the test simulations. The diameter of the soma is 18.8 um. 
 
-\subsubsection{Y chaped morphology}
+\subsubsection{Y-shape morphology}
 In this case we test the method for a neuron, which has two dendrites.
 The main question is whether the method is able to differentiate between the inputs arriving to the dendrites. 
 
@@ -360,6 +293,34 @@ LFPy shifts the cell by default
 creating the connection between the segments and coordinates in my code
 
 As the LFPy is simulated by using the straight lines I should use the segments used int LFPy to describe my cell, does LFPy provide any branching information?
+
+
+\subsection{Error map}
+
+Calculation of error in the current:
+The following measure of error was used for  
+\begin{equation}
+\label{eq:berror_current}
+\epsilon = \frac{ \sum \limits_i \sum \limits_t \vert C_{i,t}-C^0_{i,t} \vert }{\sum\limits_i \sum\limits_t \vert C^0_{i,t}\vert },
+\end{equation}
+where $C^0$ denotes the membrane currents calculated by LFPy, $C$ stands for the ksCSD estimated current, the summation goes for runs all segments $i$ and all time snaps $t$.  
+As the ksCSD method by its nature induces smoothing, we compared the estimated currents also with the smoothed versions of the original membrane currents. As expected, the error is smaller in this case. As a smoother we used a Gaussian kernel function with a bandwidth equal of $R$.
+
+\begin{figure}
+\centering
+\includegraphics[width= 15 cm]{plots/errorplot1_currenterror.png}
+\caption{The setup for the test simulation}
+\label{fig: error_current_map}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width= 15 cm]{plots/errorplot1_smoothed.png}
+\caption{The setup for the test simulation}
+\label{fig: error_current_smoothed_map}
+\end{figure}
+
 
 
 \section{Sources of errors}
