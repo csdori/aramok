@@ -19,6 +19,13 @@
 %Electrophysiological recordings
 %Functions
 %Dendritic computation
+The human brain contains $10^{11}$ neurons, each of them on average connecting to $10^4$ others resulting a highly complex system, what scientists strive to understand. As the centuries are passing by, the equipments used in this quest are getting more sensitive and specific. Even though it's possible to reach sub-millisecond  temporal and sub-micrometer spatial resolution or to  see the whole brain's activation, our understanding is highly limited. One of the most important and crucial question is what the neural code in the brain is and how computation is done. One specific property of the neurons is, that they are not just able to change their membrane potential significantly within a few milliseconds, which mechanism is called action potential, but influence other neuron's membrane potential typically through the connections called synapses. There is a huge variability in the morphology of neurons in the different brain regions usually connected to their roles. As typically it is the dendrite-tree, where the inputs of other cells arrive modifying the membrane potential, if there were a tool to detect the caused change in the membrane potential and the location, it would lead to the possibility of the deeper understanding of the computation done by neurons. 
+%The action potential is "born" at the axon hillock, which is the part of the neuron close to the soma, due to raising the permeability of the membrane over a threshold. 
+%%% osszehasonlitas a tobbi modszerrel
+There are few methods aiming to estimate the current source density, which is the sum of currents entering or leaving a specific volume of a population \cite{Nicholson} \cite{DanielW} \cite{iCSD} or a single neuron \cite{Soma} based on the recordings of 1 or 2 dimensional multielectrode-arrays (MEA). These methods are using some special geometrical assumptions, and do not provide any information about the inputs on a detailed dendrite level.
+As a result of the rapid improvement in the MEA technology it is possible to make MEAs with 20 um spatial distribution and 30 kHz sampling frequency.
+The motivation of our work was to develop a method for estimating the membrane currents of a neuron with respect to its morphology.
+
 
 
 \subsection{Overview of Relevant Current Source Density Methods (CSD)}
@@ -55,6 +62,9 @@ The Spike CSD \cite{Soma} aims to calculate the current source distribution of s
 
 
 \section{The  kCSD method for single neurons (ksCSD)}
+In this method we combine the main ideas of two methods to calculate the current source density distribution of single neurons \cite{Soma} by using kernel methods\cite{DanielW}. The main advantages of this method is the more accurate spatial resolution, but for this the morphology of the cell is needed. Fluorescent dyes enable such reconstruction after the recording was done. 
+
+
 Motivation: new imaging technology with high spatiotemporal distribution
 Biological relevance:   Fluorescent dyes enable such reconstruction after the recording was done.
 
@@ -120,7 +130,7 @@ K(\textbf{x}_k,\textbf{x}_l)= \sum_{i=1}^M b_i (\textbf{x}_k) b_i (\textbf{x}_l)
 \end{equation} 
  
 \begin{equation}
-\tilde{K}(\textbf{x}_k,\textbf{y}_l)= \sum_{j=1}^M b_ (\textbf{x}_k) \tilde{b}_j (\textbf{y}_l) 
+\tilde{K}(\textbf{x}_k,\textbf{y}_l)= \sum_{j=1}^M b_j (\textbf{x}_k) \tilde{b}_j (\textbf{y}_l) 
 \end{equation} 
  
 Using the simulated or measured extracellular potentials ($V$) and assuming $\tilde{K}$ is invertible the solution for $C$ is straightforward.

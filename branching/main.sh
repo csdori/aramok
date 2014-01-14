@@ -2,7 +2,8 @@
 
 
 #bash main.sh  #to run this script
-	
+	#ipython elektrodakoordgenerator_villa.py
+
 	#number of electrodes
 	#elnum='32'
 	#echo $elnum > elnum.txt
@@ -13,24 +14,24 @@
 #Morphology
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/03a_pyramidal9aFI.CNG2.swc'
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/branching.swc'
-	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/morpho1.swc'
+	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/morpho1.swc'
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/gulyas_pv08b.swc'
 	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/villa.swc'
-	#morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/ballstick.swc'
+	morpho='/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/morphology/ballstick.swc'
 
 	echo $morpho > morphology.txt
 	#let's give a name to this cell
 	#cellname='gulyas_pv08b'
-	#cellname='ballstick_el32'  
-	#cellname='villa_el32'  
-	cellname='morpho1_el32' 
+	cellname='ballstick_el36'  
+	#cellname='villa_el36'  
+	#cellname='morpho1_el32' 
 	echo $cellname > cellname.txt
 	#Run the LFPy code for generating membrane currents and EC potentials
 	#ipython branching.py
 	ipython branching_villa.py  
 	echo 'simulation of EC ready!'
 
-
+mkdir out_$cellname
 #the branching_villa python code saves the length of the cell, lets read it back
 celllength=$(< celllength)
 echo 'The total length of the branchis is:' $celllength
@@ -124,6 +125,12 @@ pdflatex /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/ksCSD_best.
 #gifsicle --delay 30 --colors 256 `ls -1 *.gif` > ksCSD_test.gif
 #rm s*
 
-
+#copy some files ...
+#LFP
+cp /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/myLFP /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_$cellname/myLFP
+#Original currents
+cp /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/membcurr /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_$cellname/membcurr
+#Electrode coordinates
+cp /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/elcoord_x_y_z /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_$cellname/elcoord_x_y_z
 
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  26 DEC 2013 23:18
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.5.22)  7 JAN 2014 02:07
 entering extended mode
  %&-line parsing enabled.
 **skCSD.tex
@@ -250,59 +250,82 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 LaTeX Warning: No \author given.
 
 
-LaTeX Warning: Citation `Nicholson' on page 1 undefined on input line 40.
+LaTeX Warning: Citation `Nicholson' on page 1 undefined on input line 25.
 
 
-LaTeX Warning: Citation `DanielW' on page 1 undefined on input line 46.
+LaTeX Warning: Citation `DanielW' on page 1 undefined on input line 25.
 
 
-LaTeX Warning: Citation `Soma' on page 1 undefined on input line 51.
+LaTeX Warning: Citation `iCSD' on page 1 undefined on input line 25.
+
+
+LaTeX Warning: Citation `Soma' on page 1 undefined on input line 25.
+
+
+LaTeX Warning: Citation `Nicholson' on page 1 undefined on input line 47.
+
+
+LaTeX Warning: Citation `DanielW' on page 1 undefined on input line 53.
 
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 
-LaTeX Warning: Citation `DanielW' on page 2 undefined on input line 115.
+LaTeX Warning: Citation `Soma' on page 2 undefined on input line 58.
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 146.
 
-(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+LaTeX Warning: Citation `Soma' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Citation `DanielW' on page 2 undefined on input line 65.
+
+
+LaTeX Warning: Citation `DanielW' on page 2 undefined on input line 125.
+
+[2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 156.
+
+ (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
- [2]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 156.
 
-LaTeX Warning: Reference `fig: test_setup' on page 3 undefined on input line 18
+
+LaTeX Warning: Reference `fig: test_setup' on page 3 undefined on input line 19
 1.
 
 <plots/ballstick.png, id=26, 301.125pt x 602.25pt>
 File: plots/ballstick.png Graphic file (type png)
  <use plots/ballstick.png>
-Overfull \hbox (13.14355pt too wide) in paragraph at lines 188--189
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 198--199
 [][] 
  []
 
 <plots/villa.png, id=27, 301.125pt x 602.25pt>
 File: plots/villa.png Graphic file (type png)
  <use plots/villa.png>
-Overfull \hbox (13.14355pt too wide) in paragraph at lines 194--195
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 204--205
 [][] 
  []
 
 <plots/morpho1.png, id=28, 301.125pt x 602.25pt>
 File: plots/morpho1.png Graphic file (type png)
  <use plots/morpho1.png>
-Overfull \hbox (13.14355pt too wide) in paragraph at lines 200--201
+Overfull \hbox (13.14355pt too wide) in paragraph at lines 210--211
 [][] 
  []
 
-[3 <./plots/ballstick.png (PNG copy)> <./plots/villa.png (PNG copy)> <./plots/m
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[3]
+
+LaTeX Warning: Citation `LFPy' on page 4 undefined on input line 232.
+
+[4 <./plots/ballstick.png (PNG copy)> <./plots/villa.png (PNG copy)> <./plots/m
 orpho1.png (PNG copy)>]
-
-LaTeX Warning: Citation `LFPy' on page 4 undefined on input line 222.
-
-[4] <plots/errorplot1_currenterror.png, id=35, 1241.438pt x 1248.665pt>
+<plots/errorplot1_currenterror.png, id=35, 1241.438pt x 1248.665pt>
 File: plots/errorplot1_currenterror.png Graphic file (type png)
 
 <use plots/errorplot1_currenterror.png>
@@ -319,16 +342,16 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 2729 strings out of 495061
- 34669 string characters out of 1182621
+ 2730 strings out of 495061
+ 34675 string characters out of 1182621
  99876 words of memory out of 3000000
- 5866 multiletter control sequences out of 15000+50000
+ 5867 multiletter control sequences out of 15000+50000
  20299 words of font info for 57 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 27i,7n,32p,667b,277s stack positions out of 5000i,500n,10000p,200000b,50000s
- </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/zoe
-/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/zoe/.texmf-var/f
-onts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/zoe/.texmf-var/fonts/pk/ljfou
+ 27i,7n,32p,1308b,277s stack positions out of 5000i,500n,10000p,200000b,50000s
+ </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/zoe
+/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/zoe/.texmf-var/f
+onts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/zoe/.texmf-var/fonts/pk/ljfou
 r/jknappen/ec/ecbx1728.600pk> </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec
 /ecrm1440.600pk> </home/zoe/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm2074.600
 pk></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/sh
@@ -342,9 +365,9 @@ texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive
 /fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type
 1/public/amsfonts/cm/cmsy6.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
 fonts/cm/cmsy8.pfb>
-Output written on skCSD.pdf (8 pages, 780280 bytes).
+Output written on skCSD.pdf (8 pages, 782030 bytes).
 PDF statistics:
- 320 PDF objects out of 1000 (max. 8388607)
+ 321 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
