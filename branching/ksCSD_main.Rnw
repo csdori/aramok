@@ -409,6 +409,7 @@ K.tilda<-t(B)%*%B.tilda
 C<-1/const*t(K.tilda)%*%ginv(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
 #C<-1/const*t(K.tilda)%*%solve(K)%*%LFP #*1000000#hogy nV-ban legyen az LFP ,
 #C<-C/10^6 #a sigmaban cm^2-et használnak
+
 @
 
 
@@ -520,7 +521,6 @@ write.table(current.error.abs,name.current.error.abs,col.names=FALSE, row.names=
 cat('Estimation error of the currents:',current.error.abs)
 
 
-
 #az lfpt-t akár simítani is lehetne és úgy összehasonlítani, de minek?
 #par(mfrow=c(2,1))
 #matplot(t(LFP),t='l')
@@ -531,7 +531,21 @@ cat('Estimation error of the currents:',current.error.abs)
 #image(t(LFP),col=rainbow(150))
 #image(t(LFP.est),col=rainbow(150))
 #Az eredeti eloszlást csak közelítve kapjuk vissza...
+@
+Let us see the crossvalidation error and the crossvalidated potential
+<<crossval,fig=TRUE,echo=FALSE>>=
+#####################
+##########Crossvalidation
+#########################
+source('alprogik/ksCSD_crossvalid.R')
+cross.valid.error<-cross.valid(LFP,t(K.tilda)%*%ginv(K))[[1]]
+fi_star<-cross.valid(LFP,t(K.tilda)%*%ginv(K))[[2]] #crossvalidated potential
+zelim<-range(LFP,fi_star)
+par(mfrow=c(2,1))
+image(t(as.matrix(LFP)),zlim=zelim, main='Original LFP')
+image(t(fi_star),zlim=zelim,main='CV LFP')
 
+write.table(cross.valid.error,'cross_valid_error',col.names=FALSE, row.names=FALSE)
 @
 
 
@@ -668,17 +682,18 @@ lines(-10*y+j*10,x,col=rainbow(branch.nb)[j])
 @
 
 <<bestparameters,echo=FALSE>>=
+whicherror<-cross.valid.error   #current.error.smoothed.abs
 if (file.exists(paste(outname,'/bestparams',sep=''))== TRUE ){
 bestparams<-as.matrix(read.table(paste(outname,'/bestparams',sep='')))
 #ha a mostani jobb az elozo szimulacional
-if(bestparams[1] >current.error.smoothed.abs){
-bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
+if(bestparams[1] >whicherror){
+bestparams<-c(whicherror,base,R,el.nb,seg.db,M)
 write.table(bestparams,paste(outname,'/bestparams',sep=''),col.names=FALSE, row.names=FALSE)
 }
 }
 
 if (file.exists(paste(outname,'/bestparams',sep=''))== FALSE ){
-bestparams<-c(current.error.smoothed.abs,base,R,el.nb,seg.db,M)
+bestparams<-c(whicherror,base,R,el.nb,seg.db,M)
 write.table(bestparams,paste(outname,'/bestparams',sep=''),col.names=FALSE, row.names=FALSE)
 }
 
