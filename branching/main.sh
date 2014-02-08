@@ -24,7 +24,7 @@
 	#cellname='gulyas_pv08b'
 	#cellname='ballstick_el36'  
 	#cellname='villa_el36'  
-	cellname='morpho1_el72' 
+	cellname='morpho1_el144_valami' 
 	echo $cellname > cellname.txt
 	#Run the LFPy code for generating membrane currents and EC potentials
 	#ipython branching.py
@@ -44,7 +44,7 @@ elnum=$(< elnum.txt)
 echo -n "" > /media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_$cellname/parameterek.txt
 
 #number of basis functions
-for bnum in `seq 80 40 200`
+for bnum in `seq 300 100 500` #80 40 200`
 do
 #((bnumlow=elnum))
 #((bnumstep=elnum*2))

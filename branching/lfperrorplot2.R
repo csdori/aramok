@@ -1,6 +1,6 @@
 #hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_morpho1_el128/'
 #hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_morpho1_el36/'
-hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_morpho1_el72/'
+hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_morpho1_el144_valami/'
 #hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_villa_el36/'
 #hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_villa_el128/'
 #hol<-'/media/BA0ED4600ED416EB/agy/kCSD/progik/bs_futtat/branching/out_villa/'
@@ -29,7 +29,7 @@ fit<- Tps( params[basis.which,2:3],params[basis.which,4]) # fit surface to data
  plot.surface(out.p, type="C",xlab='R',ylab='M',main='Error values',zlim=c(0,0.000017)) # surface plot  
 #points(fit$x[which.min(fit$y),][1],fit$x[which.min(fit$y),][2],pch=8,cex=2)
 
-points(out.p$x[which(out.p$z==min(out.p$z),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z),arr.ind=TRUE)][2],pch=8,cex=2)
+points(out.p$x[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)][2],pch=8,cex=2)
 dev.off()
 
 # current error
@@ -40,7 +40,7 @@ fit<- Tps( params[basis.which,2:3],params[basis.which,5]) # fit surface to data
 #    holding 1 and 4 fixed at their median levels
  out.p<-predict.surface(fit, xy=c(1,2))  
  plot.surface(out.p, type="C",xlab='R',ylab='M',main='Error values',zlim=c(0,3)) # surface plot 
-points(out.p$x[which(out.p$z==min(out.p$z),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z),arr.ind=TRUE)][2],pch=8,cex=2)
+points(out.p$x[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)][2],pch=8,cex=2)
 dev.off()
 
 # smoothed current error
@@ -51,7 +51,7 @@ fit<- Tps( params[basis.which,2:3],params[basis.which,6]) # fit surface to data
 #    holding 1 and 4 fixed at their median levels
  out.p<-predict.surface(fit, xy=c(1,2))  
  plot.surface(out.p, type="C",xlab='R',ylab='M',main='Error values',zlim=c(0,3)) # surface plot 
-points(out.p$x[which(out.p$z==min(out.p$z),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z),arr.ind=TRUE)][2],pch=8,cex=2)
+points(out.p$x[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)][2],pch=8,cex=2)
 dev.off()
 
 # smoothed current error
@@ -62,7 +62,7 @@ fit<- Tps( params[basis.which,2:3],params[basis.which,7]) # fit surface to data
 #    holding 1 and 4 fixed at their median levels
  out.p<-predict.surface(fit, xy=c(1,2))  
  plot.surface(out.p, type="C",xlab='R',ylab='M',main='CV Error Values',zlim=c(0,1)) # surface plot 
-points(out.p$x[which(out.p$z==min(out.p$z),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z),arr.ind=TRUE)][2],pch=8,cex=2)
+points(out.p$x[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)[1]],out.p$y[which(out.p$z==min(out.p$z,na.rm = TRUE),arr.ind=TRUE)][2],pch=8,cex=2)
 dev.off()
 
 
